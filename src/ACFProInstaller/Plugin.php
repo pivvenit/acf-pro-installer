@@ -221,7 +221,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     protected function getKeyFromEnv()
     {
-        $this->loadDotEnv();
+        if (file_exists(getcwd() . DIRECTORY_SEPARATOR . '.env')) {
+            $dotenv = Dotenv::create(getcwd());
+            $dotenv->load();
+        }
         $key = getenv(self::KEY_ENV_VARIABLE);
 
         if (!$key) {
@@ -229,21 +232,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
 
         return $key;
-    }
-
-    /**
-     * Make environment variables in .env available if .env exists
-     *
-     * getcwd() returns the directory of composer.json.
-     *
-     * @access protected
-     */
-    protected function loadDotEnv()
-    {
-        if (file_exists(getcwd() . DIRECTORY_SEPARATOR . '.env')) {
-            $dotenv = Dotenv::create(getcwd());
-            $dotenv->load();
-        }
     }
 
     /**
