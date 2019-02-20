@@ -38,14 +38,12 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * The name of the ACF PRO package
      */
-    const ACF_PRO_PACKAGE_NAME =
-    'advanced-custom-fields/advanced-custom-fields-pro';
+    const ACF_PRO_PACKAGE_NAME = 'advanced-custom-fields/advanced-custom-fields-pro';
 
     /**
      * The url where ACF PRO can be downloaded (without version and key)
      */
-    const ACF_PRO_PACKAGE_URL =
-    'https://connect.advancedcustomfields.com/index.php?p=pro&a=download';
+    const ACF_PRO_PACKAGE_URL = 'https://connect.advancedcustomfields.com/index.php?p=pro&a=download';
 
     /**
      * @access protected
@@ -244,7 +242,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     protected function loadDotEnv()
     {
-        if (file_exists(getcwd().DIRECTORY_SEPARATOR.'.env')) {
+        if (file_exists(getcwd() . DIRECTORY_SEPARATOR . '.env')) {
             $dotenv = Dotenv::create(getcwd());
             $dotenv->load();
         }
