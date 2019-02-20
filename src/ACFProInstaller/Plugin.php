@@ -11,6 +11,8 @@ use Composer\Plugin\PluginEvents;
 use Composer\Plugin\PluginInterface;
 use Composer\Plugin\PreFileDownloadEvent;
 use Dotenv\Dotenv;
+use League\Uri\Http;
+use League\Uri\Modifiers\MergeQuery;
 use PhilippBaschke\ACFProInstaller\Exceptions\MissingKeyException;
 use UnexpectedValueException;
 
@@ -114,7 +116,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         if ($package->getName() === self::ACF_PRO_PACKAGE_NAME) {
             $version = $this->validateVersion($package->getPrettyVersion());
             $package->setDistUrl(
-                $this->addParameterToUrl($package->getDistUrl(), 't', $version)
+                $this->appendVersion($package->getDistUrl(), $version)
             );
         }
     }
@@ -133,16 +135,12 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function addKey(PreFileDownloadEvent $event)
     {
-        $processedUrl = $event->getProcessedUrl();
+        $packageUrl = $event->getProcessedUrl();
 
-        if ($this->isAcfProPackageUrl($processedUrl)) {
+        if ($this->isAcfProPackageUrl($packageUrl)) {
             $rfs = $event->getRemoteFilesystem();
             $acfRfs = new RemoteFilesystem(
-                $this->addParameterToUrl(
-                    $processedUrl,
-                    'k',
-                    $this->getKeyFromEnv()
-                ),
+                $this->appendLicenseKey($packageUrl),
                 $this->io,
                 $this->composer->getConfig(),
                 $rfs->getOptions(),
@@ -249,42 +247,27 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * Add a parameter to the given url
+     * Adds the license key to the Advanced Custom Fields Url
      *
-     * Adds the given parameter at the end of the given url. It only works with
-     * urls that already have parameters (e.g. test.com?p=true) because it
-     * uses & as a separation character.
-     *
-     * @access protected
-     * @param string $url The url that should be appended
-     * @param string $parameter The name of the parameter
-     * @param string $value The value of the parameter
-     * @return string The url appended with &parameter=value
+     * @param string $url the url to append the key to
+     * @return string The new url with the appended license key
+     * @throws MissingKeyException
      */
-    protected function addParameterToUrl($url, $parameter, $value)
-    {
-        $cleanUrl = $this->removeParameterFromUrl($url, $parameter);
-        $urlParameter = '&' . $parameter . '=' . urlencode($value);
-
-        return $cleanUrl .= $urlParameter;
+    private function appendLicenseKey($url): string {
+        $modifier = new MergeQuery("k={$this->getKeyFromEnv()}");
+        return $modifier->process(Http::createFromString($url));
     }
 
     /**
-     * Remove a given parameter from the given url
+     * Adds the license key to the Advanced Custom Fields Url
      *
-     * Removes &parameter=value from the given url. Only works with urls that
-     * have multiple parameters and the parameter that should be removed is
-     * not the first (because of the & character).
-     *
-     * @access protected
-     * @param string $url The url where the parameter should be removed
-     * @param string $parameter The name of the parameter
-     * @return string The url with the &parameter=value removed
+     * @param string $url the url to append the key to
+     * @param string $version version string
+     * @return string The new url with the appended license key
+     * @throws MissingKeyException
      */
-    protected function removeParameterFromUrl($url, $parameter)
-    {
-        // e.g. &t=1.2.3 in example.com?p=index.php&t=1.2.3&k=key
-        $pattern = "/(&$parameter=[^&]*)/";
-        return preg_replace($pattern, '', $url);
+    private function appendVersion($url, $version): string {
+        $modifier = new MergeQuery("t={$version}");
+        return $modifier->process(Http::createFromString($url));
     }
 }
