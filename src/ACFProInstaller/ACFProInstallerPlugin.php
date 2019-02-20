@@ -35,7 +35,7 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * The name of the environment variable
      * where the ACF PRO key should be stored.
      */
-    const KEY_ENV_VARIABLE = 'ACF_PRO_KEY';
+    public const KEY_ENV_VARIABLE = 'ACF_PRO_KEY';
 
     /**
      * The name of the ACF PRO package

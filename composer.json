@@ -1,14 +1,17 @@
 {
-  "name": "philippbaschke/acf-pro-installer",
+  "name": "pivvenit/acf-pro-installer",
   "description": "An install helper for Advanced Custom Fields PRO",
   "type": "composer-plugin",
   "license": "MIT",
   "authors": [
     {
-      "name": "Philipp Baschke",
-      "email": "philipp@baschke.com"
+      "name": "Sander Klock",
+      "homepage": "https://pivvenit.nl"
     }
   ],
+  "replace": {
+    "philippbaschke/acf-pro-installer" : "1.0.2"
+  },
   "keywords": [
     "wordpress", "composer", "wp", "plugin", "acf", "env", "pro"
   ],
@@ -17,7 +20,8 @@
     "composer-plugin-api": "^1.1",
     "vlucas/phpdotenv": "^3.0",
     "league/uri-manipulations": "^1.5",
-    "league/uri-schemes": "^1.2"
+    "league/uri-schemes": "^1.2",
+    "ext-json": "*"
   },
   "require-dev": {
     "composer/composer": "^1.0",

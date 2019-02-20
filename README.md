@@ -1,9 +1,5 @@
 # ACF PRO Installer
 
-[![Packagist](https://img.shields.io/packagist/v/philippbaschke/acf-pro-installer.svg?maxAge=3600)](https://packagist.org/packages/philippbaschke/acf-pro-installer)
-[![Packagist](https://img.shields.io/packagist/l/philippbaschke/acf-pro-installer.svg?maxAge=2592000)](https://github.com/PhilippBaschke/acf-pro-installer/blob/master/LICENSE)
-[![Travis](https://img.shields.io/travis/PhilippBaschke/acf-pro-installer.svg?maxAge=3600)](https://travis-ci.org/PhilippBaschke/acf-pro-installer)
-[![Coveralls](https://img.shields.io/coveralls/PhilippBaschke/acf-pro-installer.svg?maxAge=3600)](https://coveralls.io/github/PhilippBaschke/acf-pro-installer)
 
 A composer plugin that makes installing [ACF PRO] with [composer] easier. 
 
@@ -14,30 +10,22 @@ It reads your :key: ACF PRO key from the **environment** or a **.env file**.
 
 ## Usage
 
-**1. Add the package repository to the [`repositories`][composer-repositories] field in `composer.json` 
-   (based on this [gist][package-gist]):**
+**1. Add our [Advanced Custom Fields Composer Bridge](https://github.com/pivvenit/acf-composer-bridge) repository to the [`repositories`][composer-repositories] field in `composer.json`**
+> This repository simply provides a periodically updated [packages.json](https://pivvenit.github.io/acf-composer-bridge/v1/packages.json), that redirects composer to the ACF provided downloads. 
+Note that this repository **does not** provide any Advanced Custom Fields Pro packages itself, it only tells Composer where it can find ACF Pro packages.
+Secondly it is important to note that **your license key is not submitted to the repository**, since the installer downloads the Advanced Custom Fields Pro zip files directly from ACF's servers.
+
+**Why this repository?**
+
+Since it enables you to use `advanced-custom-fields/advanced-custom-fields-pro` package with version constraints like any normal Packagist package.
+You no longer have to update the version manually as you had to with `philippbaschke/acf-pro-installer` (and tools like dependabot will also work for ACF).
 
 ```json
 {
-  "type": "package",
-  "package": {
-    "name": "advanced-custom-fields/advanced-custom-fields-pro",
-    "version": "*.*.*(.*)",
-    "type": "wordpress-plugin",
-    "dist": {
-      "type": "zip",
-      "url": "https://connect.advancedcustomfields.com/index.php?p=pro&a=download"
-    },
-    "require": {
-      "philippbaschke/acf-pro-installer": "^1.0",
-      "composer/installers": "^1.0"
-    }
-  }
+  "type": "composer",
+  "url": "https://pivvenit.github.io/acf-composer-bridge/v1/"
 }
 ```
-Replace `"version": "*.*.*(.*)"` with your desired version.
-
-Replace `"type": "wordpress-plugin"` with `"type": "library"` if you would like to have ACF PRO installed in the `./vendor` directory instead of `./wp-content/plugins`. This may be desireable if for example, you are including ACF PRO in a WordPress theme.
 
 **2. Make your ACF PRO key available**
 
@@ -53,15 +41,9 @@ ACF_PRO_KEY=Your-Key-Here
 **3. Require ACF PRO**
 
 ```sh
-composer require advanced-custom-fields/advanced-custom-fields-pro:*
+composer require advanced-custom-fields/advanced-custom-fields-pro
 ```
-You can specify an [exact version][composer-versions] (that matches your desired version).
-
-If you use **`*`**, composer will install the version from the package repository (see 1). This has the benefit that you only need to change the version in the package repository when you want to update.
-
-*Be aware that `composer update` will only work if you change the `version` in the package repository. Decreasing the version only works if you require an [exact version][composer-versions].*
 
 [composer-repositories]: https://getcomposer.org/doc/04-schema.md#repositories
-[composer-versions]: https://getcomposer.org/doc/articles/versions.md
 [package-gist]: https://gist.github.com/fThues/705da4c6574a4441b488
 [acf-account]: https://www.advancedcustomfields.com/my-account/
