@@ -6,11 +6,13 @@ use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\Installer\PackageEvent;
 use Composer\Installer\PackageEvents;
 use Composer\IO\IOInterface;
+use Composer\Package\PackageInterface;
 use Composer\Plugin\PluginEvents;
 use Composer\Plugin\PluginInterface;
 use Composer\Plugin\PreFileDownloadEvent;
 use Dotenv\Dotenv;
 use PhilippBaschke\ACFProInstaller\Exceptions\MissingKeyException;
+use UnexpectedValueException;
 
 /**
  * A composer plugin that makes installing ACF PRO possible
@@ -219,7 +221,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      *
      * @access protected
      * @return string The key from the environment
-     * @throws PhilippBaschke\ACFProInstaller\Exceptions\MissingKeyException
+     * @throws MissingKeyException
      */
     protected function getKeyFromEnv()
     {
