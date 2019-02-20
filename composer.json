@@ -14,7 +14,7 @@
   ],
   "require": {
     "php": ">=7.2",
-    "composer-plugin-api": "^1.0",
+    "composer-plugin-api": "^1.1",
     "vlucas/phpdotenv": "~3.0",
     "league/uri-manipulations": "^1.5",
     "league/uri-schemes": "^1.2"
