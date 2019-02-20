@@ -10,3 +10,4 @@ coverage
 build/logs/clover.xml
 
 .idea
+.phpunit.result.cache

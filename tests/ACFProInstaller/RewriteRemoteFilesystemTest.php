@@ -1,15 +1,16 @@
 <?php namespace PhilippBaschke\ACFProInstaller\Test;
 
 use PhilippBaschke\ACFProInstaller\RewriteUrlRemoteFilesystem;
+use PHPUnit\Framework\TestCase;
 
-class RewriteRemoteFilesystemTest extends \PHPUnit_Framework_TestCase
+class RewriteRemoteFilesystemTest extends TestCase
 {
     protected $io;
     protected $config;
 
-    protected function setUp()
+    protected function setUp() : void
     {
-        $this->io = $this->getMock('Composer\IO\IOInterface');
+        $this->io = $this->createMock('Composer\IO\IOInterface');
     }
 
     public function testExtendsComposerRemoteFilesystem()

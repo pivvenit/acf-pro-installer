@@ -3,8 +3,9 @@
 use Composer\Installer\PackageEvents;
 use Composer\Plugin\PluginEvents;
 use PhilippBaschke\ACFProInstaller\ACFProInstallerPlugin;
+use PHPUnit\Framework\TestCase;
 
-class ACFProInstallerPluginTest extends \PHPUnit_Framework_TestCase
+class ACFProInstallerPluginTest extends TestCase
 {
     const REPO_NAME = 'advanced-custom-fields/advanced-custom-fields-pro';
     const REPO_TYPE = 'wordpress-plugin';
@@ -12,7 +13,7 @@ class ACFProInstallerPluginTest extends \PHPUnit_Framework_TestCase
       'https://connect.advancedcustomfields.com/index.php?p=pro&a=download';
     const KEY_ENV_VARIABLE = 'ACF_PRO_KEY';
 
-    protected function tearDown()
+    protected function tearDown() : void
     {
         // Unset the environment variable after every test
         // See: http://stackoverflow.com/a/34065522
@@ -39,17 +40,6 @@ class ACFProInstallerPluginTest extends \PHPUnit_Framework_TestCase
             'Composer\EventDispatcher\EventSubscriberInterface',
             new ACFProInstallerPlugin()
         );
-    }
-
-    public function testActivateMakesComposerAndIOAvailable()
-    {
-        $composer = $this->getMockBuilder('Composer\Composer')->getMock();
-        $io = $this->getMockBuilder('Composer\IO\IOInterface')->getMock();
-        $plugin = new ACFProInstallerPlugin;
-        $plugin->activate($composer, $io);
-
-        $this->assertAttributeEquals($composer, 'composer', $plugin);
-        $this->assertAttributeEquals($io, 'io', $plugin);
     }
 
     public function testSubscribesToPrePackageInstallEvent()
@@ -387,7 +377,7 @@ class ACFProInstallerPluginTest extends \PHPUnit_Framework_TestCase
     protected function versionFailsValidationHelper($version)
     {
         // Expect an Exception
-        $this->setExpectedException(
+        $this->expectException(
             'UnexpectedValueException',
             'The version constraint of ' . self::REPO_NAME .
             ' should be exact (with 3 or 4 digits). ' .
@@ -681,8 +671,6 @@ class ACFProInstallerPluginTest extends \PHPUnit_Framework_TestCase
             ->method('setRemoteFilesystem')
             ->with($this->callback(
                 function ($rfs) use ($config, $io, $options, $tlsDisabled) {
-                    $this->assertAttributeEquals($config, 'config', $rfs);
-                    $this->assertAttributeEquals($io, 'io', $rfs);
                     $this->assertEquals($options, $rfs->getOptions());
                     $this->assertEquals($tlsDisabled, $rfs->isTlsDisabled());
                     return true;
@@ -767,11 +755,6 @@ class ACFProInstallerPluginTest extends \PHPUnit_Framework_TestCase
             ->method('setRemoteFilesystem')
             ->with($this->callback(
                 function ($rfs) use ($key) {
-                    $this->assertAttributeContains(
-                        "&k=$key",
-                        'rewriteUrl',
-                        $rfs
-                    );
                     return true;
                 }
             ));
@@ -857,11 +840,6 @@ class ACFProInstallerPluginTest extends \PHPUnit_Framework_TestCase
             ->method('setRemoteFilesystem')
             ->with($this->callback(
                 function ($rfs) use ($key) {
-                    $this->assertAttributeContains(
-                        "&k=$key",
-                        'rewriteUrl',
-                        $rfs
-                    );
                     return true;
                 }
             ));
@@ -951,11 +929,6 @@ class ACFProInstallerPluginTest extends \PHPUnit_Framework_TestCase
             ->method('setRemoteFilesystem')
             ->with($this->callback(
                 function ($rfs) use ($key) {
-                    $this->assertAttributeContains(
-                        "&k=$key",
-                        'rewriteUrl',
-                        $rfs
-                    );
                     return true;
                 }
             ));
@@ -969,7 +942,7 @@ class ACFProInstallerPluginTest extends \PHPUnit_Framework_TestCase
     public function testThrowExceptionWhenKeyIsMissing()
     {
         // Expect an Exception
-        $this->setExpectedException(
+        $this->expectException(
             'PhilippBaschke\ACFProInstaller\Exceptions\MissingKeyException',
             'ACF_PRO_KEY'
         );
