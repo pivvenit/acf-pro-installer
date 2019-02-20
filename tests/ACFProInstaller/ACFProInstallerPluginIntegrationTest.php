@@ -26,9 +26,9 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
     /**
      * @inheritdoc
      */
-    protected function setUp() : void
+    protected function setUp(): void
     {
-        if (file_exists(getcwd().DIRECTORY_SEPARATOR.'.env')) {
+        if (file_exists(getcwd() . DIRECTORY_SEPARATOR . '.env')) {
             $dotenv = Dotenv::create(getcwd());
             $dotenv->load();
         }
@@ -39,11 +39,12 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
         parent::setUp();
         $this->fs = new Filesystem();
         $testId = uniqid("acf-pro-installer-test");
-        $this->testPath = sys_get_temp_dir()."/{$testId}";
+        $this->testPath = sys_get_temp_dir() . "/{$testId}";
         $this->fs->ensureDirectoryExists($this->testPath);
         $this->createComposerJson();
         ini_set('memory_limit', '512M');
     }
+
     /**
      * @inheritdoc
      */
@@ -54,24 +55,17 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
 
     }
 
-    public function test_Install_WorksCorrectly() {
+    public function test_Install_WorksCorrectly()
+    {
         $input = new ArrayInput(['command' => 'install', "--working-dir" => $this->testPath]);
         $application = new Application();
         $application->setAutoExit(false); // prevent `$application->run` method from exitting the script
         $this->assertSame(0, $application->run($input));
     }
 
-    private function ensureDirectoryExistsAndClear($directory)
+    private function createComposerJson()
     {
-        $fs = new Filesystem();
-        if (is_dir($directory)) {
-            $fs->removeDirectory($directory);
-        }
-        mkdir($directory, 0777, true);
-    }
-
-    private function createComposerJson() {
-        $pluginDir = realpath(__DIR__."/../../");
+        $pluginDir = realpath(__DIR__ . "/../../");
         $data = (object)[
             "name" => "test/plugintest",
             "repositories" => [
@@ -79,7 +73,7 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
                     "type" => "path",
                     "url" => $pluginDir,
                     "version" => "dev-master",
-                    "options" => (object) [
+                    "options" => (object)[
                         "symlink" => false
                     ]
                 ],
@@ -94,7 +88,7 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
                 "advanced-custom-fields/advanced-custom-fields-pro" => "5.7.10"
             ]
         ];
-        $json = json_encode($data,  JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
-        file_put_contents($this->testPath."/composer.json", $json);
+        $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        file_put_contents($this->testPath . "/composer.json", $json);
     }
 }
