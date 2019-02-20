@@ -29,7 +29,7 @@ use UnexpectedValueException;
  * With this plugin user no longer need to expose their license key in
  * composer.json.
  */
-class Plugin implements PluginInterface, EventSubscriberInterface
+class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
 {
     /**
      * The name of the environment variable

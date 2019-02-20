@@ -29,7 +29,7 @@
     "psr-4": { "PhilippBaschke\\ACFProInstaller\\": "src/ACFProInstaller" }
   },
   "extra": {
-    "class": "PhilippBaschke\\ACFProInstaller\\Plugin"
+    "class": "PhilippBaschke\\ACFProInstaller\\ACFProInstallerPlugin"
   },
   "scripts": {
     "lint": "phpcs src tests --standard=PSR2",

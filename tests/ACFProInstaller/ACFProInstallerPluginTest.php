@@ -2,9 +2,9 @@
 
 use Composer\Installer\PackageEvents;
 use Composer\Plugin\PluginEvents;
-use PhilippBaschke\ACFProInstaller\Plugin;
+use PhilippBaschke\ACFProInstaller\ACFProInstallerPlugin;
 
-class PluginTest extends \PHPUnit_Framework_TestCase
+class ACFProInstallerPluginTest extends \PHPUnit_Framework_TestCase
 {
     const REPO_NAME = 'advanced-custom-fields/advanced-custom-fields-pro';
     const REPO_TYPE = 'wordpress-plugin';
@@ -29,7 +29,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
             'Composer\Plugin\PluginInterface',
-            new Plugin()
+            new ACFProInstallerPlugin()
         );
     }
 
@@ -37,7 +37,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
             'Composer\EventDispatcher\EventSubscriberInterface',
-            new Plugin()
+            new ACFProInstallerPlugin()
         );
     }
 
@@ -45,7 +45,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
     {
         $composer = $this->getMockBuilder('Composer\Composer')->getMock();
         $io = $this->getMockBuilder('Composer\IO\IOInterface')->getMock();
-        $plugin = new Plugin;
+        $plugin = new ACFProInstallerPlugin;
         $plugin->activate($composer, $io);
 
         $this->assertAttributeEquals($composer, 'composer', $plugin);
@@ -54,7 +54,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
 
     public function testSubscribesToPrePackageInstallEvent()
     {
-        $subscribedEvents = Plugin::getSubscribedEvents();
+        $subscribedEvents = ACFProInstallerPlugin::getSubscribedEvents();
         $this->assertEquals(
             $subscribedEvents[PackageEvents::PRE_PACKAGE_INSTALL],
             'addVersion'
@@ -63,7 +63,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
 
     public function testSubscribesToPreUpdateInstallEvent()
     {
-        $subscribedEvents = Plugin::getSubscribedEvents();
+        $subscribedEvents = ACFProInstallerPlugin::getSubscribedEvents();
         $this->assertEquals(
             $subscribedEvents[PackageEvents::PRE_PACKAGE_UPDATE],
             'addVersion'
@@ -72,7 +72,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
 
     public function testSubscribesToPreFileDownloadEvent()
     {
-        $subscribedEvents = Plugin::getSubscribedEvents();
+        $subscribedEvents = ACFProInstallerPlugin::getSubscribedEvents();
         $this->assertEquals(
             $subscribedEvents[PluginEvents::PRE_FILE_DOWNLOAD],
             'addKey'
@@ -150,7 +150,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
             ->willReturn($operation);
 
         // Call addVersion
-        $plugin = new Plugin();
+        $plugin = new ACFProInstallerPlugin();
         $plugin->addVersion($packageEvent);
     }
 
@@ -225,7 +225,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
             ->willReturn($operation);
 
         // Call addVersion
-        $plugin = new Plugin();
+        $plugin = new ACFProInstallerPlugin();
         $plugin->addVersion($packageEvent);
     }
 
@@ -294,7 +294,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
             ->willReturn($operation);
 
         // Call addVersion
-        $plugin = new Plugin();
+        $plugin = new ACFProInstallerPlugin();
         $plugin->addVersion($packageEvent);
     }
 
@@ -365,7 +365,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
             ->willReturn($operation);
 
         // Call addVersion
-        $plugin = new Plugin();
+        $plugin = new ACFProInstallerPlugin();
         $plugin->addVersion($packageEvent);
     }
 
@@ -445,7 +445,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
             ->willReturn($operation);
 
         // Call addVersion
-        $plugin = new Plugin();
+        $plugin = new ACFProInstallerPlugin();
         $plugin->addVersion($packageEvent);
     }
 
@@ -530,7 +530,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
             ->willReturn($operation);
 
         // Call addVersion
-        $plugin = new Plugin();
+        $plugin = new ACFProInstallerPlugin();
         $plugin->addVersion($packageEvent);
     }
 
@@ -605,7 +605,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
             ->willReturn($operation);
 
         // Call addVersion
-        $plugin = new Plugin();
+        $plugin = new ACFProInstallerPlugin();
         $plugin->addVersion($packageEvent);
     }
 
@@ -690,7 +690,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
             ));
 
         // Call addKey
-        $plugin = new Plugin();
+        $plugin = new ACFProInstallerPlugin();
         $plugin->activate($composer, $io);
         $plugin->addKey($event);
     }
@@ -777,7 +777,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
             ));
 
         // Call addKey
-        $plugin = new Plugin();
+        $plugin = new ACFProInstallerPlugin();
         $plugin->activate($composer, $io);
         $plugin->addKey($event);
     }
@@ -867,7 +867,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
             ));
 
         // Call addKey
-        $plugin = new Plugin();
+        $plugin = new ACFProInstallerPlugin();
         $plugin->activate($composer, $io);
         $plugin->addKey($event);
     }
@@ -961,7 +961,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
             ));
 
         // Call addKey
-        $plugin = new Plugin();
+        $plugin = new ACFProInstallerPlugin();
         $plugin->activate($composer, $io);
         $plugin->addKey($event);
     }
@@ -1001,7 +1001,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
             ->willReturn($rfs);
 
         // Call addKey
-        $plugin = new Plugin();
+        $plugin = new ACFProInstallerPlugin();
         $plugin->addKey($event);
     }
 
@@ -1035,7 +1035,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
             ->method('setRemoteFilesystem');
 
         // Call addKey
-        $plugin = new Plugin();
+        $plugin = new ACFProInstallerPlugin();
         $plugin->addKey($event);
     }
 }
