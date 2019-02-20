@@ -241,7 +241,8 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * @return string The new url with the appended license key
      * @throws MissingKeyException
      */
-    private function appendLicenseKey($url): string {
+    private function appendLicenseKey($url): string
+    {
         $modifier = new MergeQuery("k={$this->getKeyFromEnv()}");
         return $modifier->process(Http::createFromString($url));
     }
@@ -254,7 +255,8 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * @return string The new url with the appended license key
      * @throws MissingKeyException
      */
-    private function appendVersion($url, $version): string {
+    private function appendVersion($url, $version): string
+    {
         $modifier = new MergeQuery("t={$version}");
         return $modifier->process(Http::createFromString($url));
     }
