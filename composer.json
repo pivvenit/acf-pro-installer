@@ -13,7 +13,7 @@
     "wordpress", "composer", "wp", "plugin", "acf", "env", "pro"
   ],
   "require": {
-    "php": ">=7.2",
+    "php": ">=5.5",
     "composer-plugin-api": "^1.1",
     "vlucas/phpdotenv": "^3.0",
     "league/uri-manipulations": "^1.5",
