@@ -139,7 +139,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
         if ($this->isAcfProPackageUrl($packageUrl)) {
             $rfs = $event->getRemoteFilesystem();
-            $acfRfs = new RemoteFilesystem(
+            $acfRfs = new RewriteUrlRemoteFilesystem(
                 $this->appendLicenseKey($packageUrl),
                 $this->io,
                 $this->composer->getConfig(),

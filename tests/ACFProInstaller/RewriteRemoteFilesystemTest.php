@@ -1,8 +1,8 @@
 <?php namespace PhilippBaschke\ACFProInstaller\Test;
 
-use PhilippBaschke\ACFProInstaller\RemoteFilesystem;
+use PhilippBaschke\ACFProInstaller\RewriteUrlRemoteFilesystem;
 
-class RemoteFilesystemTest extends \PHPUnit_Framework_TestCase
+class RewriteRemoteFilesystemTest extends \PHPUnit_Framework_TestCase
 {
     protected $io;
     protected $config;
@@ -16,7 +16,7 @@ class RemoteFilesystemTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
             'Composer\Util\RemoteFilesystem',
-            new RemoteFilesystem('', $this->io)
+            new RewriteUrlRemoteFilesystem('', $this->io)
         );
     }
 
@@ -24,7 +24,7 @@ class RemoteFilesystemTest extends \PHPUnit_Framework_TestCase
     public function testCopyUsesAcfFileUrl()
     {
         $acfFileUrl = 'file://'.__FILE__;
-        $rfs = new RemoteFilesystem($acfFileUrl, $this->io);
+        $rfs = new RewriteUrlRemoteFilesystem($acfFileUrl, $this->io);
         $file = tempnam(sys_get_temp_dir(), 'pb');
 
         $this->assertTrue(

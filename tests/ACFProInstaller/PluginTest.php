@@ -769,7 +769,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
                 function ($rfs) use ($key) {
                     $this->assertAttributeContains(
                         "&k=$key",
-                        'acfFileUrl',
+                        'rewriteUrl',
                         $rfs
                     );
                     return true;
@@ -859,7 +859,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
                 function ($rfs) use ($key) {
                     $this->assertAttributeContains(
                         "&k=$key",
-                        'acfFileUrl',
+                        'rewriteUrl',
                         $rfs
                     );
                     return true;
@@ -953,7 +953,7 @@ class PluginTest extends \PHPUnit_Framework_TestCase
                 function ($rfs) use ($key) {
                     $this->assertAttributeContains(
                         "&k=$key",
-                        'acfFileUrl',
+                        'rewriteUrl',
                         $rfs
                     );
                     return true;
