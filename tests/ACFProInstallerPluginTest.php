@@ -22,6 +22,7 @@ class ACFProInstallerPluginTest extends TestCase
         self::$actualWorkingDirectory = getcwd();
         $testId = uniqid("acf-pro-installer-test");
         $tempWorkDir = sys_get_temp_dir() . "/{$testId}";
+        mkdir($tempWorkDir);
         chdir($tempWorkDir);
     }
 
