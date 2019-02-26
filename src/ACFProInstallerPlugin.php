@@ -3,10 +3,8 @@
 namespace PivvenIT\Composer\Installers\ACFPro;
 
 use Composer\Composer;
-use Composer\DependencyResolver\Operation\OperationInterface;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
-use Composer\Package\PackageInterface;
 use Composer\Plugin\PluginEvents;
 use Composer\Plugin\PluginInterface;
 use Composer\Plugin\PreFileDownloadEvent;
@@ -129,23 +127,6 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
             );
             $event->setRemoteFilesystem($acfRfs);
         }
-    }
-
-    /**
-     * Get the package from a given operation
-     *
-     * Is needed because update operations don't have a getPackage method
-     *
-     * @access protected
-     * @param OperationInterface $operation The operation
-     * @return PackageInterface The package of the operation
-     */
-    protected function getPackageFromOperation(OperationInterface $operation)
-    {
-        if ($operation->getJobType() === 'update') {
-            return $operation->getTargetPackage();
-        }
-        return $operation->getPackage();
     }
 
     /**
