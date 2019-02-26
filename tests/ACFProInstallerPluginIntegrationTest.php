@@ -22,19 +22,28 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
      */
     private $fs;
 
-    /**
-     * @inheritdoc
-     */
-    protected function setUp(): void
+    public static function setUpBeforeClass(): void
     {
         if (file_exists(getcwd() . DIRECTORY_SEPARATOR . '.env')) {
-            $dotenv = Dotenv::create(__DIR__);
+            $dotenv = Dotenv::create(getcwd());
             $dotenv->load();
         }
         $key = getenv(ACFProInstallerPlugin::KEY_ENV_VARIABLE);
         if (empty($key)) {
             throw new MissingKeyException();
         }
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        // no operation
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function setUp(): void
+    {
         parent::setUp();
         $this->fs = new Filesystem();
         $testId = uniqid("acf-pro-installer-test");
@@ -72,7 +81,7 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
 
     private function createComposerJson(string $version)
     {
-        $pluginDir = realpath(__DIR__ . "/../../");
+        $pluginDir = realpath(__DIR__ . "/../");
         $data = (object)[
             "name" => "test/plugintest",
             "repositories" => [
