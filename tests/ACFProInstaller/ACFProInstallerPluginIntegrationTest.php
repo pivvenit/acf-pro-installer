@@ -28,12 +28,12 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
      */
     protected function setUp(): void
     {
-        if (file_exists(getcwd() . DIRECTORY_SEPARATOR . '.env')) {
-            $dotenv = Dotenv::create(getcwd());
+        if (file_exists(__DIR__.DIRECTORY_SEPARATOR . '.env')) {
+            $dotenv = Dotenv::create(__DIR__);
             $dotenv->load();
         }
         $key = getenv(ACFProInstallerPlugin::KEY_ENV_VARIABLE);
-        if (!$key) {
+        if (empty($key)) {
             throw new MissingKeyException();
         }
         parent::setUp();
@@ -41,7 +41,6 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
         $testId = uniqid("acf-pro-installer-test");
         $this->testPath = sys_get_temp_dir() . "/{$testId}";
         $this->fs->ensureDirectoryExists($this->testPath);
-        $this->createComposerJson();
         ini_set('memory_limit', '512M');
     }
 
@@ -52,18 +51,27 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
     {
         parent::tearDown();
         $this->fs->removeDirectory($this->testPath);
-
     }
 
-    public function test_Install_WorksCorrectly()
+    public function test_WithSpecificVersion_Install_WorksCorrectly()
     {
+        $this->createComposerJson("5.7.10");
         $input = new ArrayInput(['command' => 'install', "--working-dir" => $this->testPath]);
         $application = new Application();
         $application->setAutoExit(false); // prevent `$application->run` method from exitting the script
         $this->assertSame(0, $application->run($input));
     }
 
-    private function createComposerJson()
+    public function test_WithDevMaster_Install_WorksCorrectly()
+    {
+        $this->createComposerJson("dev-master");
+        $input = new ArrayInput(['command' => 'install', "--working-dir" => $this->testPath]);
+        $application = new Application();
+        $application->setAutoExit(false); // prevent `$application->run` method from exitting the script
+        $this->assertSame(0, $application->run($input));
+    }
+
+    private function createComposerJson(string $version)
     {
         $pluginDir = realpath(__DIR__ . "/../../");
         $data = (object)[
@@ -79,13 +87,13 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
                 ],
                 (object)[
                     "type" => "composer",
-                    "url" => "https://pivvenit.github.io/acf-composer-bridge/v1/"
+                    "url" => "https://pivvenit.github.io/acf-composer-bridge/composer/v1/"
                 ]
             ],
             "minimum-stability" => "dev",
             "require" => (object)[
                 "pivvenit/acf-pro-installer" => "dev-master",
-                "advanced-custom-fields/advanced-custom-fields-pro" => "5.7.10"
+                "advanced-custom-fields/advanced-custom-fields-pro" => "{$version}"
             ]
         ];
         $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);

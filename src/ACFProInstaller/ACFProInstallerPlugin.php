@@ -78,8 +78,6 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
     /**
      * Subscribe this Plugin to relevant Events
      *
-     * Pre Install/Update: The version needs to be added to the url
-     *                     (will show up in composer.lock)
      * Pre Download: The key needs to be added to the url
      *               (will not show up in composer.lock)
      *
@@ -90,37 +88,9 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            PackageEvents::PRE_PACKAGE_INSTALL => 'addVersion',
-            PackageEvents::PRE_PACKAGE_UPDATE => 'addVersion',
             PluginEvents::PRE_FILE_DOWNLOAD => 'addKey'
         ];
     }
-
-    /**
-     * Add the version to the package url
-     *
-     * The version needs to be added in the PRE_PACKAGE_INSTALL/UPDATE
-     * event to make sure that different version save different urls
-     * in composer.lock. Composer would load any available version from cache
-     * although the version numbers might differ (because they have the same
-     * url).
-     *
-     * @access public
-     * @param PackageEvent $event The event that called the method
-     * @throws UnexpectedValueException
-     */
-    public function addVersion(PackageEvent $event)
-    {
-        $package = $this->getPackageFromOperation($event->getOperation());
-
-        if ($package->getName() === self::ACF_PRO_PACKAGE_NAME) {
-            $version = $this->validateVersion($package->getPrettyVersion());
-            $package->setDistUrl(
-                $this->appendVersion($package->getDistUrl(), $version)
-            );
-        }
-    }
-
 
     /**
      * Add the key from the environment to the event url
@@ -168,34 +138,6 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * Validate that the version is an exact major.minor.patch.optional version
-     *
-     * The url to download the code for the package only works with exact
-     * version numbers with 3 or 4 digits: e.g. 1.2.3 or 1.2.3.4
-     *
-     * @access protected
-     * @param string $version The version that should be validated
-     * @return string The valid version
-     * @throws UnexpectedValueException
-     */
-    protected function validateVersion($version)
-    {
-        // \A = start of string, \Z = end of string
-        // See: http://stackoverflow.com/a/34994075
-        $major_minor_patch_optional = '/\A\d\.\d\.\d{1,2}(?:\.\d)?\Z/';
-
-        if (!preg_match($major_minor_patch_optional, $version)) {
-            throw new \UnexpectedValueException(
-                'The version constraint of ' . self::ACF_PRO_PACKAGE_NAME .
-                ' should be exact (with 3 or 4 digits). ' .
-                'Invalid version string "' . $version . '"'
-            );
-        }
-
-        return $version;
-    }
-
-    /**
      * Test if the given url is the ACF PRO download url
      *
      * @access protected
@@ -221,6 +163,7 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      */
     protected function getKeyFromEnv()
     {
+        echo getcwd();
         if (file_exists(getcwd() . DIRECTORY_SEPARATOR . '.env')) {
             $dotenv = Dotenv::create(getcwd());
             $dotenv->load();
@@ -244,20 +187,6 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
     private function appendLicenseKey($url): string
     {
         $modifier = new MergeQuery("k={$this->getKeyFromEnv()}");
-        return $modifier->process(Http::createFromString($url));
-    }
-
-    /**
-     * Adds the license key to the Advanced Custom Fields Url
-     *
-     * @param string $url the url to append the key to
-     * @param string $version version string
-     * @return string The new url with the appended license key
-     * @throws MissingKeyException
-     */
-    private function appendVersion($url, $version): string
-    {
-        $modifier = new MergeQuery("t={$version}");
         return $modifier->process(Http::createFromString($url));
     }
 }
