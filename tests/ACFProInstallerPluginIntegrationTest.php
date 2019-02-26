@@ -6,12 +6,13 @@ use Composer\Console\Application;
 use Composer\Util\Filesystem;
 use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
-use PivvenIT\Composer\Installers\ACFPro\ACFProInstallerPlugin;
 use PivvenIT\Composer\Installers\ACFPro\Exceptions\MissingKeyException;
 use Symfony\Component\Console\Input\ArrayInput;
 
 class ACFProInstallerPluginIntegrationTest extends TestCase
 {
+    private const KEY_ENV_VARIABLE = "ACF_PRO_KEY";
+
     /**
      * @var string $testPath
      */
@@ -28,7 +29,7 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
             $dotenv = Dotenv::create(getcwd());
             $dotenv->load();
         }
-        $key = getenv(ACFProInstallerPlugin::KEY_ENV_VARIABLE);
+        $key = getenv(self::KEY_ENV_VARIABLE);
         if (empty($key)) {
             throw new MissingKeyException();
         }

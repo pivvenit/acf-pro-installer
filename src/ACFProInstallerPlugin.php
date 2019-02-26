@@ -34,7 +34,7 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * The name of the environment variable
      * where the ACF PRO key should be stored.
      */
-    public const KEY_ENV_VARIABLE = 'ACF_PRO_KEY';
+    private const KEY_ENV_VARIABLE = 'ACF_PRO_KEY';
 
     /**
      * The name of the ACF PRO package
@@ -57,6 +57,18 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * @var IOInterface
      */
     protected $io;
+
+    /**
+     * Name of the key used as environment variable
+     *
+     * @var string
+     */
+    private $envKeyName;
+
+    public function __construct($envKeyName = self::KEY_ENV_VARIABLE)
+    {
+        $this->envKeyName = $envKeyName;
+    }
 
     /**
      * The function that is called when the plugin is activated
@@ -166,10 +178,9 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
             $dotenv = Dotenv::create(getcwd());
             $dotenv->load();
         }
-        $key = getenv(self::KEY_ENV_VARIABLE);
-
-        if (!$key) {
-            throw new MissingKeyException(self::KEY_ENV_VARIABLE);
+        $key = getenv($this->envKeyName);
+        if (empty($key)) {
+            throw new MissingKeyException($this->envKeyName);
         }
 
         return $key;

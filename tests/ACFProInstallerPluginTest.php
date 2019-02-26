@@ -13,7 +13,22 @@ class ACFProInstallerPluginTest extends TestCase
     const REPO_TYPE = 'wordpress-plugin';
     const REPO_URL =
       'https://connect.advancedcustomfields.com/index.php?p=pro&a=download';
-    const KEY_ENV_VARIABLE = 'ACF_PRO_KEY';
+    const KEY_ENV_VARIABLE = 'ACF_PRO_TEST_KEY';
+
+    private static $actualWorkingDirectory;
+
+    public static function setUpBeforeClass() : void
+    {
+        self::$actualWorkingDirectory = getcwd();
+        $testId = uniqid("acf-pro-installer-test");
+        $tempWorkDir = sys_get_temp_dir() . "/{$testId}";
+        chdir($tempWorkDir);
+    }
+
+    public static function tearDownAfterClass() : void
+    {
+        chdir(self::$actualWorkingDirectory);
+    }
 
     protected function tearDown() : void
     {
@@ -32,7 +47,7 @@ class ACFProInstallerPluginTest extends TestCase
     {
         $this->assertInstanceOf(
             'Composer\Plugin\PluginInterface',
-            new ACFProInstallerPlugin()
+            new ACFProInstallerPlugin(self::KEY_ENV_VARIABLE)
         );
     }
 
@@ -40,7 +55,7 @@ class ACFProInstallerPluginTest extends TestCase
     {
         $this->assertInstanceOf(
             'Composer\EventDispatcher\EventSubscriberInterface',
-            new ACFProInstallerPlugin()
+            new ACFProInstallerPlugin(self::KEY_ENV_VARIABLE)
         );
     }
 
@@ -132,7 +147,7 @@ class ACFProInstallerPluginTest extends TestCase
             ));
 
         // Call addKey
-        $plugin = new ACFProInstallerPlugin();
+        $plugin = new ACFProInstallerPlugin(self::KEY_ENV_VARIABLE);
         $plugin->activate($composer, $io);
         $plugin->addKey($event);
     }
@@ -214,7 +229,7 @@ class ACFProInstallerPluginTest extends TestCase
             ));
 
         // Call addKey
-        $plugin = new ACFProInstallerPlugin();
+        $plugin = new ACFProInstallerPlugin(self::KEY_ENV_VARIABLE);
         $plugin->activate($composer, $io);
         $plugin->addKey($event);
     }
@@ -299,7 +314,7 @@ class ACFProInstallerPluginTest extends TestCase
             ));
 
         // Call addKey
-        $plugin = new ACFProInstallerPlugin();
+        $plugin = new ACFProInstallerPlugin(self::KEY_ENV_VARIABLE);
         $plugin->activate($composer, $io);
         $plugin->addKey($event);
     }
@@ -388,7 +403,7 @@ class ACFProInstallerPluginTest extends TestCase
             ));
 
         // Call addKey
-        $plugin = new ACFProInstallerPlugin();
+        $plugin = new ACFProInstallerPlugin(self::KEY_ENV_VARIABLE);
         $plugin->activate($composer, $io);
         $plugin->addKey($event);
     }
@@ -398,7 +413,7 @@ class ACFProInstallerPluginTest extends TestCase
         // Expect an Exception
         $this->expectException(
             MissingKeyException::class,
-            'ACF_PRO_KEY'
+            self::KEY_ENV_VARIABLE
         );
 
         // Mock a RemoteFilesystem
@@ -428,7 +443,7 @@ class ACFProInstallerPluginTest extends TestCase
             ->willReturn($rfs);
 
         // Call addKey
-        $plugin = new ACFProInstallerPlugin();
+        $plugin = new ACFProInstallerPlugin(self::KEY_ENV_VARIABLE);
         $plugin->addKey($event);
     }
 
@@ -462,7 +477,7 @@ class ACFProInstallerPluginTest extends TestCase
             ->method('setRemoteFilesystem');
 
         // Call addKey
-        $plugin = new ACFProInstallerPlugin();
+        $plugin = new ACFProInstallerPlugin(self::KEY_ENV_VARIABLE);
         $plugin->addKey($event);
     }
 }
