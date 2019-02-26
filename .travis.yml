@@ -6,6 +6,7 @@ php:
 before_script:
   - phpenv config-rm xdebug.ini
   - git fetch --unshallow
+  - mkdir -p build/logs
 
 install:
   - composer install --no-interaction
@@ -13,7 +14,9 @@ install:
 script:
   - composer run-script lint
   - composer run-script test
-  - composer run-script coverage
+
+after_success:
+  - travis_retry php vendor/bin/php-coveralls
 
 notifications:
   email: false
