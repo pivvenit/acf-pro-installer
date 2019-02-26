@@ -5,6 +5,7 @@ php:
 
 before_script:
   - phpenv config-rm xdebug.ini
+  - git fetch --unshallow
 
 install:
   - composer install --no-interaction
