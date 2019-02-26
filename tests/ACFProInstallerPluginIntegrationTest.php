@@ -89,7 +89,6 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
                 (object)[
                     "type" => "path",
                     "url" => $pluginDir,
-                    "version" => "dev-master",
                     "options" => (object)[
                         "symlink" => false
                     ]
@@ -101,7 +100,7 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
             ],
             "minimum-stability" => "dev",
             "require" => (object)[
-                "pivvenit/acf-pro-installer" => "dev-master",
+                "pivvenit/acf-pro-installer" => "*",
                 "advanced-custom-fields/advanced-custom-fields-pro" => "{$version}"
             ]
         ];
