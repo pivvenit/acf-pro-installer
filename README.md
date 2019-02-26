@@ -12,7 +12,7 @@ It reads your :key: ACF PRO key from the **environment** or a **.env file**.
 ## Usage
 
 **1. Add our [Advanced Custom Fields Composer Bridge](https://github.com/pivvenit/acf-composer-bridge) repository to the [`repositories`][composer-repositories] field in `composer.json`**
-> This repository simply provides a periodically updated [packages.json](https://pivvenit.github.io/acf-composer-bridge/composer/v1/packages.json), that redirects composer to the ACF provided downloads. 
+> This repository simply provides a periodically updated [packages.json](https://pivvenit.github.io/acf-composer-bridge/composer/v2/packages.json), that redirects composer to the ACF provided downloads. 
 Note that this repository **does not** provide any Advanced Custom Fields Pro packages itself, it only tells Composer where it can find ACF Pro packages.
 Secondly it is important to note that **your license key is not submitted to the repository**, since the installer downloads the Advanced Custom Fields Pro zip files directly from ACF's servers.
 
@@ -24,7 +24,7 @@ You no longer have to update the version manually as you had to with `philippbas
 ```json
 {
   "type": "composer",
-  "url": "https://pivvenit.github.io/acf-composer-bridge/composer/v1/"
+  "url": "https://pivvenit.github.io/acf-composer-bridge/composer/v2/"
 }
 ```
 

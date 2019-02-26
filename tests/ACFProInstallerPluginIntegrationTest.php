@@ -87,7 +87,7 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
             "name" => "test/plugintest",
             "repositories" => [
                 (object)[
-                    "type" => "path",
+                    "type" => "vcs",
                     "url" => $pluginDir,
                     "options" => (object)[
                         "symlink" => false
@@ -95,12 +95,12 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
                 ],
                 (object)[
                     "type" => "composer",
-                    "url" => "https://pivvenit.github.io/acf-composer-bridge/composer/v1/"
+                    "url" => "https://pivvenit.github.io/acf-composer-bridge/composer/v2/"
                 ]
             ],
             "minimum-stability" => "dev",
             "require" => (object)[
-                "pivvenit/acf-pro-installer" => "*",
+                "pivvenit/acf-pro-installer" => "dev-master as 2.0.x-dev",
                 "advanced-custom-fields/advanced-custom-fields-pro" => "{$version}"
             ]
         ];
