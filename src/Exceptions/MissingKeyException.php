@@ -1,4 +1,6 @@
-<?php namespace PhilippBaschke\ACFProInstaller\Exceptions;
+<?php
+
+namespace PivvenIT\Composer\Installers\ACFPro\Exceptions;
 
 use Exception;
 

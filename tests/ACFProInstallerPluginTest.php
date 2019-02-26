@@ -1,9 +1,11 @@
-<?php namespace PhilippBaschke\ACFProInstaller\Test;
+<?php
 
-use Composer\Installer\PackageEvents;
+namespace PivvenIT\Composer\Installers\ACFPro\Test;
+
 use Composer\Plugin\PluginEvents;
-use PhilippBaschke\ACFProInstaller\ACFProInstallerPlugin;
 use PHPUnit\Framework\TestCase;
+use PivvenIT\Composer\Installers\ACFPro\ACFProInstallerPlugin;
+use PivvenIT\Composer\Installers\ACFPro\Exceptions\MissingKeyException;
 
 class ACFProInstallerPluginTest extends TestCase
 {
@@ -395,7 +397,7 @@ class ACFProInstallerPluginTest extends TestCase
     {
         // Expect an Exception
         $this->expectException(
-            'PhilippBaschke\ACFProInstaller\Exceptions\MissingKeyException',
+            MissingKeyException::class,
             'ACF_PRO_KEY'
         );
 

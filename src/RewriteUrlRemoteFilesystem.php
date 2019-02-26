@@ -1,6 +1,6 @@
 <?php
 
-namespace PhilippBaschke\ACFProInstaller;
+namespace PivvenIT\Composer\Installers\ACFPro;
 
 use Composer\Config;
 use Composer\IO\IOInterface;

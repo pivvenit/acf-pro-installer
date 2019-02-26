@@ -1,14 +1,14 @@
 <?php
 
-namespace PhilippBaschke\ACFProInstaller\Test;
+namespace PivvenIT\Composer\Installers\ACFPro\Test;
 
 
 use Composer\Console\Application;
 use Composer\Util\Filesystem;
 use Dotenv\Dotenv;
-use PhilippBaschke\ACFProInstaller\ACFProInstallerPlugin;
-use PhilippBaschke\ACFProInstaller\Exceptions\MissingKeyException;
 use PHPUnit\Framework\TestCase;
+use PivvenIT\Composer\Installers\ACFPro\ACFProInstallerPlugin;
+use PivvenIT\Composer\Installers\ACFPro\Exceptions\MissingKeyException;
 use Symfony\Component\Console\Input\ArrayInput;
 
 class ACFProInstallerPluginIntegrationTest extends TestCase
@@ -28,7 +28,7 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
      */
     protected function setUp(): void
     {
-        if (file_exists(__DIR__.DIRECTORY_SEPARATOR . '.env')) {
+        if (file_exists(getcwd() . DIRECTORY_SEPARATOR . '.env')) {
             $dotenv = Dotenv::create(__DIR__);
             $dotenv->load();
         }

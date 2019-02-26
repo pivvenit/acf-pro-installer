@@ -1,8 +1,10 @@
-<?php namespace PhilippBaschke\ACFProInstaller\Test;
+<?php
+
+namespace PivvenIT\Composer\Installers\ACFPro\Test;
 
 use Composer\Util\RemoteFilesystem;
-use PhilippBaschke\ACFProInstaller\RewriteUrlRemoteFilesystem;
 use PHPUnit\Framework\TestCase;
+use PivvenIT\Composer\Installers\ACFPro\RewriteUrlRemoteFilesystem;
 
 class RewriteRemoteFilesystemTest extends TestCase
 {

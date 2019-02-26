@@ -1,10 +1,10 @@
-<?php namespace PhilippBaschke\ACFProInstaller;
+<?php
+
+namespace PivvenIT\Composer\Installers\ACFPro;
 
 use Composer\Composer;
 use Composer\DependencyResolver\Operation\OperationInterface;
 use Composer\EventDispatcher\EventSubscriberInterface;
-use Composer\Installer\PackageEvent;
-use Composer\Installer\PackageEvents;
 use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
 use Composer\Plugin\PluginEvents;
@@ -13,8 +13,7 @@ use Composer\Plugin\PreFileDownloadEvent;
 use Dotenv\Dotenv;
 use League\Uri\Http;
 use League\Uri\Modifiers\MergeQuery;
-use PhilippBaschke\ACFProInstaller\Exceptions\MissingKeyException;
-use UnexpectedValueException;
+use PivvenIT\Composer\Installers\ACFPro\Exceptions\MissingKeyException;
 
 /**
  * A composer plugin that makes installing ACF PRO possible
@@ -163,7 +162,6 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      */
     protected function getKeyFromEnv()
     {
-        echo getcwd();
         if (file_exists(getcwd() . DIRECTORY_SEPARATOR . '.env')) {
             $dotenv = Dotenv::create(getcwd());
             $dotenv->load();

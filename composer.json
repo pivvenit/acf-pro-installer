@@ -29,10 +29,12 @@
     "squizlabs/php_codesniffer": "^3.4"
   },
   "autoload": {
-    "psr-4": { "PhilippBaschke\\ACFProInstaller\\": "src/ACFProInstaller" }
+    "psr-4": {
+      "PivvenIT\\Composer\\Installers\\ACFPro\\": "src"
+    }
   },
   "extra": {
-    "class": "PhilippBaschke\\ACFProInstaller\\ACFProInstallerPlugin"
+    "class": "PivvenIT\\Composer\\Installers\\ACFPro\\ACFProInstallerPlugin"
   },
   "scripts": {
     "lint": "phpcs src tests --standard=PSR2",
