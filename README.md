@@ -23,7 +23,7 @@ You no longer have to update the version manually as you had to with `philippbas
 ```json
 {
   "type": "composer",
-  "url": "https://pivvenit.github.io/acf-composer-bridge/v1/"
+  "url": "https://pivvenit.github.io/acf-composer-bridge/composer/v1/"
 }
 ```
 
