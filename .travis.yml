@@ -4,7 +4,6 @@ php:
   - '7.3'
 
 before_script:
-  - phpenv config-rm xdebug.ini
   - git fetch --unshallow
   - mkdir -p build/logs
 
