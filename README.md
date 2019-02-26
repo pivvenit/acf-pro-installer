@@ -1,6 +1,6 @@
 # ACF PRO Installer
 
-[![Build Status](https://travis-ci.org/pivvenit/acf-pro-installer.svg?branch=master)](https://travis-ci.org/pivvenit/acf-pro-installer)
+[![Packagist](https://img.shields.io/packagist/v/pivvenit/acf-pro-installer.svg?maxAge=3600)](https://packagist.org/packages/pivvenit/acf-pro-installer)[![Packagist](https://img.shields.io/packagist/l/pivvenit/acf-pro-installer.svg?maxAge=2592000)](https://github.com/pivvenit/acf-pro-installer/blob/master/LICENSE)[![Build Status](https://travis-ci.org/pivvenit/acf-pro-installer.svg?branch=master)](https://travis-ci.org/pivvenit/acf-pro-installer)
 
 A composer plugin that makes installing [ACF PRO] with [composer] easier. 
 
