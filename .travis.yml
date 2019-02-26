@@ -1,0 +1,18 @@
+language: php
+php:
+  - '7.2'
+  - '7.3'
+
+before_script:
+  - phpenv config-rm xdebug.ini
+
+install:
+  - composer install --no-interaction
+
+script:
+  - compose  run-script lint
+  - composer run-script test
+  - composer run-script coverage
+
+notifications:
+  email: false

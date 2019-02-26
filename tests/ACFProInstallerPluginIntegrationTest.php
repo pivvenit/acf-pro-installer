@@ -2,7 +2,6 @@
 
 namespace PivvenIT\Composer\Installers\ACFPro\Test;
 
-
 use Composer\Console\Application;
 use Composer\Util\Filesystem;
 use Dotenv\Dotenv;
@@ -53,7 +52,7 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
         $this->fs->removeDirectory($this->testPath);
     }
 
-    public function test_WithSpecificVersion_Install_WorksCorrectly()
+    public function testWithSpecificVersionInstallWorksCorrectly()
     {
         $this->createComposerJson("5.7.10");
         $input = new ArrayInput(['command' => 'install', "--working-dir" => $this->testPath]);
@@ -62,7 +61,7 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
         $this->assertSame(0, $application->run($input));
     }
 
-    public function test_WithDevMaster_Install_WorksCorrectly()
+    public function testWithDevMasterInstallWorksCorrectly()
     {
         $this->createComposerJson("dev-master");
         $input = new ArrayInput(['command' => 'install', "--working-dir" => $this->testPath]);
