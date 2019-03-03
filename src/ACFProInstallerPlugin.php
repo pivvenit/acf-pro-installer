@@ -174,16 +174,16 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      */
     private function appendLicenseKey($url): string
     {
-        $components = parse_url($url);
+        $c = parse_url($url);
         $queryParams = [];
-        parse_str($components['query'], $queryParams);
+        parse_str($c['query'], $queryParams);
         $queryParams['k'] = $this->getKeyFromEnv();
-        $components['query'] = http_build_query($queryParams);
-        $auth = (isset($components['user']) ||
-            isset($components['pass'])) ? "{$components['user']}:{$components['pass']}@" : "";
-        $port = (isset($components['port']) && !in_array(["443", " 80"],
-                $components['port'])) ? ":{$components['port']}" : "";
-        $r = "{$components['scheme']}://{$auth}{$components['host']}{$port}{$components['path']}?{$components['query']}";
+        $c['query'] = http_build_query($queryParams);
+        $auth = (isset($c['user']) ||
+            isset($c['pass'])) ? "{$c['user']}:{$c['pass']}@" : "";
+        $port = (isset($c['port']) && !in_array(["443", " 80"], $c['port'])) ?
+            ":{$c['port']}" : "";
+        $r = "{$c['scheme']}://{$auth}{$c['host']}{$port}{$c['path']}?{$c['query']}";
         return $r;
     }
 }
