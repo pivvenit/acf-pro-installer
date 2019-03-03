@@ -9,8 +9,6 @@ use Composer\Plugin\PluginEvents;
 use Composer\Plugin\PluginInterface;
 use Composer\Plugin\PreFileDownloadEvent;
 use Dotenv\Dotenv;
-use League\Uri\Http;
-use League\Uri\Modifiers\MergeQuery;
 use PivvenIT\Composer\Installers\ACFPro\Exceptions\MissingKeyException;
 
 /**
@@ -176,7 +174,16 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      */
     private function appendLicenseKey($url): string
     {
-        $modifier = new MergeQuery("k={$this->getKeyFromEnv()}");
-        return $modifier->process(Http::createFromString($url));
+        $components = parse_url($url);
+        $queryParams = [];
+        parse_str($components['query'], $queryParams);
+        $queryParams['k'] = $this->getKeyFromEnv();
+        $components['query'] = http_build_query($queryParams);
+        $auth = (isset($components['user']) ||
+            isset($components['pass'])) ? "{$components['user']}:{$components['pass']}@" : "";
+        $port = (isset($components['port']) && !in_array(["443", " 80"],
+                $components['port'])) ? ":{$components['port']}" : "";
+        $r = "{$components['scheme']}://{$auth}{$components['host']}{$port}{$components['path']}?{$components['query']}";
+        return $r;
     }
 }
