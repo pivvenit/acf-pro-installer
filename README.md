@@ -30,6 +30,18 @@ You no longer have to update the version manually as you had to with `philippbas
 }
 ```
 
+This installs the package as `wpackagist-plugin` type, in case you want a different type, use the following URL:
+
+wpackagist-muplugin:
+> `https://pivvenit.github.io/acf-composer-bridge/composer/v2/wpackagist-muplugin/`
+
+wordpress-plugin:
+> `https://pivvenit.github.io/acf-composer-bridge/composer/v2/wordpress-plugin/`
+
+library:
+> `https://pivvenit.github.io/acf-composer-bridge/composer/v2/library/`
+
+
 **2. Make your ACF PRO key available**
 
 Set the environment variable **`ACF_PRO_KEY`** to your [ACF PRO key][acf-account].
