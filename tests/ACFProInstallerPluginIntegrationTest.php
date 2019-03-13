@@ -8,6 +8,7 @@ use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
 use PivvenIT\Composer\Installers\ACFPro\Exceptions\MissingKeyException;
 use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\StringInput;
 
 class ACFProInstallerPluginIntegrationTest extends TestCase
 {
@@ -67,7 +68,7 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
         $this->createComposerJson("5.7.10");
         $input = new ArrayInput(['command' => 'install', "--working-dir" => $this->testPath]);
         $application = new Application();
-        $application->setAutoExit(false); // prevent `$application->run` method from exitting the script
+        $application->setAutoExit(false);
         $this->assertSame(0, $application->run($input));
     }
 
@@ -76,13 +77,54 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
         $this->createComposerJson("dev-master");
         $input = new ArrayInput(['command' => 'install', "--working-dir" => $this->testPath]);
         $application = new Application();
-        $application->setAutoExit(false); // prevent `$application->run` method from exitting the script
+        $application->setAutoExit(false);
         $this->assertSame(0, $application->run($input));
+    }
+
+    public function testWithBedrockInstallWorksCorrectly()
+    {
+        $input = new StringInput("create-project roots/bedrock {$this->testPath}");
+        $application = new Application();
+        $application->setAutoExit(false);
+        $application->run($input);
+
+        // Modify the composer file
+        $this->appendToComposer();
+
+        $input = new StringInput(
+            "--working-dir {$this->testPath} require advanced-custom-fields/advanced-custom-fields-pro"
+        );
+        $application = new Application();
+        $application->setAutoExit(false);
+        $this->assertSame(0, $application->run($input));
+    }
+
+    private function appendToComposer()
+    {
+        $pluginDir = $this->getPluginDirectory();
+        $composerJsonPath = "{$this->testPath}/composer.json";
+        $json = file_get_contents($composerJsonPath);
+        $composerData = json_decode($json);
+        $composerData->repositories[] = (object)[
+            "type" => "vcs",
+            "url" => $pluginDir,
+            "options" => (object)[
+                "symlink" => false
+            ]
+        ];
+        $composerData->repositories[] = (object)[
+            "type" => "composer",
+            "url" => "https://pivvenit.github.io/acf-composer-bridge/composer/v2/"
+        ];
+        $composerData->extra->{"branch-alias"} = (object)[
+            "dev-master" => "2.0.x-stable"
+        ];
+        file_put_contents($composerJsonPath, json_encode($composerData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
     private function createComposerJson(string $version)
     {
-        $pluginDir = realpath(__DIR__ . "/../");
+        $pluginDir = $this->getPluginDirectory();
         $data = (object)[
             "name" => "test/plugintest",
             "repositories" => [
@@ -106,5 +148,14 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
         ];
         $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         file_put_contents($this->testPath . "/composer.json", $json);
+    }
+
+    /**
+     * @return bool|string
+     */
+    private function getPluginDirectory()
+    {
+        $pluginDir = realpath(__DIR__ . "/../");
+        return $pluginDir;
     }
 }
