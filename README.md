@@ -32,8 +32,8 @@ You no longer have to update the version manually as you had to with `philippbas
 
 This installs the package as `wpackagist-plugin` type, in case you want a different type, use the following URL:
 
-wpackagist-muplugin:
-> `https://pivvenit.github.io/acf-composer-bridge/composer/v2/wpackagist-muplugin/`
+wordpress-muplugin:
+> `https://pivvenit.github.io/acf-composer-bridge/composer/v2/wordpress-muplugin/`
 
 wordpress-plugin:
 > `https://pivvenit.github.io/acf-composer-bridge/composer/v2/wordpress-plugin/`
