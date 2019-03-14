@@ -6,6 +6,7 @@ php:
 before_script:
   - git fetch --unshallow
   - mkdir -p build/logs
+  - phpenv config-add travis.php.ini
 
 install:
   - composer install --no-interaction
