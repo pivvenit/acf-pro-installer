@@ -84,7 +84,6 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
     public function testWithBedrockInstallWorksCorrectly()
     {
         ini_set('memory_limit', '2G');
-        echo ini_get('memory_limit');
         $input = new StringInput("create-project roots/bedrock {$this->testPath}");
         $application = new Application();
         $application->setAutoExit(false);
