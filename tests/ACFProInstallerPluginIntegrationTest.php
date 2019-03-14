@@ -26,6 +26,7 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
+        ini_set('memory_limit', '1500M');
         if (file_exists(getcwd() . DIRECTORY_SEPARATOR . '.env')) {
             $dotenv = Dotenv::create(getcwd());
             $dotenv->load();
