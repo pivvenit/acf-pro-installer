@@ -154,7 +154,13 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
     protected function getKeyFromEnv()
     {
         if (file_exists(getcwd() . DIRECTORY_SEPARATOR . '.env')) {
-            $dotenv = Dotenv::create(getcwd());
+            if (method_exists(Dotenv::class, 'createImmutable')) {
+                // vlucas/phpdotenv ^4.0
+                $dotenv = Dotenv::createImmutable(getcwd());
+            } else {
+                // vlucas/phpdotenv ^3.0
+                $dotenv = Dotenv::create(getcwd());
+            }
             $dotenv->load();
         }
         $key = getenv($this->envKeyName);
