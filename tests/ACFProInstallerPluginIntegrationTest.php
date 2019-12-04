@@ -132,19 +132,17 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
         $json = file_get_contents($composerJsonPath);
         $composerData = json_decode($json);
         $devName = getenv('TRAVIS_BRANCH') ?? 'master';
-        $composerData->repositories[] = (object)[
+        array_unshift($composerData->repositories, (object)[
             "type" => "vcs",
             "url" => $pluginDir,
             "options" => (object)[
                 "symlink" => false
             ]
-        ];
+        ]);
+        $composerData->require->{"pivvenit/acf-pro-installer"} = "dev-{$devName} as 2.999.0";
         $composerData->repositories[] = (object)[
             "type" => "composer",
-            "url" => "https://pivvenit.github.io/acf-composer-bridge/composer/v2/"
-        ];
-        $composerData->extra->{"branch-alias"} = (object)[
-            "dev-{$devName}" => "2.0.x-stable"
+            "url" => "https://pivvenit.github.io/acf-composer-bridge/composer/v3/"
         ];
         file_put_contents($composerJsonPath, json_encode($composerData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
@@ -154,7 +152,7 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
         $pluginDir = $this->getPluginDirectory();
         $devName = getenv('TRAVIS_BRANCH') ?? 'master';
         $deps = [
-            "pivvenit/acf-pro-installer" => "dev-{$devName} as 2.0.x-dev",
+            "pivvenit/acf-pro-installer" => "dev-{$devName} as 2.999.0",
             "advanced-custom-fields/advanced-custom-fields-pro" => "{$version}"
         ];
         if (!is_null($dotEnvVersion)) {
