@@ -130,7 +130,7 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
         $composerJsonPath = "{$this->testPath}/composer.json";
         $json = file_get_contents($composerJsonPath);
         $composerData = json_decode($json);
-        $devName = getenv('TRAVIS_BRANCH') ?? 'master';
+        $devName = $this->getBranch();
         array_unshift($composerData->repositories, (object)[
             "type" => "vcs",
             "url" => $pluginDir,
@@ -149,7 +149,7 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
     private function createComposerJson(string $version, string $dotEnvVersion = null)
     {
         $pluginDir = $this->getPluginDirectory();
-        $devName = getenv('TRAVIS_BRANCH') ?? 'master';
+        $devName = $this->getBranch();
         $deps = [
             "pivvenit/acf-pro-installer" => "dev-{$devName} as 2.999.0",
             "advanced-custom-fields/advanced-custom-fields-pro" => "{$version}"
@@ -187,5 +187,20 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
     {
         $pluginDir = realpath(__DIR__ . "/../");
         return $pluginDir;
+    }
+
+    /**
+     * @return string
+     */
+    private function getBranch() {
+        $branch = getenv('TRAVIS_PULL_REQUEST_BRANCH');
+        if (!empty($branch)) {
+            return $branch;
+        }
+        $branch = getenv('TRAVIS_BRANCH');
+        if (!empty($branch)) {
+            return $branch;
+        }
+        return 'master';
     }
 }
