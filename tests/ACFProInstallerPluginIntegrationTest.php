@@ -32,8 +32,7 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
                 $dotenv = Dotenv::createImmutable(getcwd());
             } else {
                 // vlucas/phpdotenv ^3.0
-                call_user_func(Dotenv::class."::create", getcwd());
-
+                $dotenv = Dotenv::create(getcwd());
             }
             $dotenv->load();
         }
