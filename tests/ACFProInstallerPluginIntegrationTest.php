@@ -192,7 +192,8 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
     /**
      * @return string
      */
-    private function getBranch() {
+    private function getBranch()
+    {
         $branch = getenv('TRAVIS_PULL_REQUEST_BRANCH');
         if (!empty($branch)) {
             return $branch;
