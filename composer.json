@@ -5,7 +5,7 @@
   "license": "MIT",
   "authors": [
     {
-      "name": "Sander Klock",
+      "name": "PivvenIT",
       "homepage": "https://pivvenit.nl"
     }
   ],
@@ -18,7 +18,7 @@
   "require": {
     "php": "^7.2",
     "composer-plugin-api": "^1.1",
-    "vlucas/phpdotenv": "^3.0",
+    "vlucas/phpdotenv": "^3.0 || ^4.0",
     "ext-json": "*"
   },
   "require-dev": {

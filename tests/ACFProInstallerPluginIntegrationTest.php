@@ -27,7 +27,13 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         if (file_exists(getcwd() . DIRECTORY_SEPARATOR . '.env')) {
-            $dotenv = Dotenv::create(getcwd());
+            if (method_exists(Dotenv::class, 'createImmutable')) {
+                // vlucas/phpdotenv ^4.0
+                $dotenv = Dotenv::createImmutable(getcwd());
+            } else {
+                // vlucas/phpdotenv ^3.0
+                $dotenv = Dotenv::create(getcwd());
+            }
             $dotenv->load();
         }
         $key = getenv(self::KEY_ENV_VARIABLE);
@@ -81,6 +87,24 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
         $this->assertSame(0, $application->run($input));
     }
 
+    public function testWithDevMasterInstallWithDotEnv3WorksCorrectly()
+    {
+        $this->createComposerJson("dev-master", "^3.0");
+        $input = new ArrayInput(['command' => 'install', "--working-dir" => $this->testPath]);
+        $application = new Application();
+        $application->setAutoExit(false);
+        $this->assertSame(0, $application->run($input));
+    }
+
+    public function testWithDevMasterInstallWithDotEnv4WorksCorrectly()
+    {
+        $this->createComposerJson("dev-master", "^4.0");
+        $input = new ArrayInput(['command' => 'install', "--working-dir" => $this->testPath]);
+        $application = new Application();
+        $application->setAutoExit(false);
+        $this->assertSame(0, $application->run($input));
+    }
+
     public function testWithBedrockInstallWorksCorrectly()
     {
         ini_set('memory_limit', '2G');
@@ -106,26 +130,34 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
         $composerJsonPath = "{$this->testPath}/composer.json";
         $json = file_get_contents($composerJsonPath);
         $composerData = json_decode($json);
-        $composerData->repositories[] = (object)[
+        $devName = $this->getBranch();
+        array_unshift($composerData->repositories, (object)[
             "type" => "vcs",
             "url" => $pluginDir,
             "options" => (object)[
                 "symlink" => false
             ]
-        ];
+        ]);
+        $composerData->require->{"pivvenit/acf-pro-installer"} = "dev-{$devName} as 2.999.0";
         $composerData->repositories[] = (object)[
             "type" => "composer",
-            "url" => "https://pivvenit.github.io/acf-composer-bridge/composer/v2/"
-        ];
-        $composerData->extra->{"branch-alias"} = (object)[
-            "dev-master" => "2.0.x-stable"
+            "url" => "https://pivvenit.github.io/acf-composer-bridge/composer/v3/"
         ];
         file_put_contents($composerJsonPath, json_encode($composerData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
-    private function createComposerJson(string $version)
+    private function createComposerJson(string $version, string $dotEnvVersion = null)
     {
         $pluginDir = $this->getPluginDirectory();
+        $devName = $this->getBranch();
+        $deps = [
+            "pivvenit/acf-pro-installer" => "dev-{$devName} as 2.999.0",
+            "advanced-custom-fields/advanced-custom-fields-pro" => "{$version}"
+        ];
+        if (!is_null($dotEnvVersion)) {
+            $deps['vlucas/phpdotenv'] = $dotEnvVersion;
+        }
+
         $data = (object)[
             "name" => "test/plugintest",
             "repositories" => [
@@ -142,10 +174,7 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
                 ]
             ],
             "minimum-stability" => "dev",
-            "require" => (object)[
-                "pivvenit/acf-pro-installer" => "dev-master as 2.0.x-dev",
-                "advanced-custom-fields/advanced-custom-fields-pro" => "{$version}"
-            ]
+            "require" => (object)$deps
         ];
         $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         file_put_contents($this->testPath . "/composer.json", $json);
@@ -158,5 +187,21 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
     {
         $pluginDir = realpath(__DIR__ . "/../");
         return $pluginDir;
+    }
+
+    /**
+     * @return string
+     */
+    private function getBranch()
+    {
+        $branch = getenv('TRAVIS_PULL_REQUEST_BRANCH');
+        if (!empty($branch)) {
+            return $branch;
+        }
+        $branch = getenv('TRAVIS_BRANCH');
+        if (!empty($branch)) {
+            return $branch;
+        }
+        return 'master';
     }
 }
