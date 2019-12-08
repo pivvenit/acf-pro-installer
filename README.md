@@ -26,20 +26,20 @@ You no longer have to update the version manually as you had to with `philippbas
 ```json
 {
   "type": "composer",
-  "url": "https://pivvenit.github.io/acf-composer-bridge/composer/v2/"
+  "url": "https://pivvenit.github.io/acf-composer-bridge/composer/v3/"
 }
 ```
 
 This installs the package as `wpackagist-plugin` type, in case you want a different type, use the following URL:
 
 wordpress-muplugin:
-> `https://pivvenit.github.io/acf-composer-bridge/composer/v2/wordpress-muplugin/`
+> `https://pivvenit.github.io/acf-composer-bridge/composer/v3/wordpress-muplugin/`
 
 wordpress-plugin:
-> `https://pivvenit.github.io/acf-composer-bridge/composer/v2/wordpress-plugin/`
+> `https://pivvenit.github.io/acf-composer-bridge/composer/v3/wordpress-plugin/`
 
 library:
-> `https://pivvenit.github.io/acf-composer-bridge/composer/v2/library/`
+> `https://pivvenit.github.io/acf-composer-bridge/composer/v3/library/`
 
 
 **2. Make your ACF PRO key available**
