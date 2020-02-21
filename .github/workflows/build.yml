@@ -3,7 +3,7 @@ on: [push, pull_request]
 name: Build
 
 jobs:
-  build-and-deploy:
+  build-and-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -27,4 +27,10 @@ jobs:
 
       - name: Check code coverage
         run: composer run coverage-check
+
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: build/logs/coverage.xml
+          fail_ci_if_error: true
 
