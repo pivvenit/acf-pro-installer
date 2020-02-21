@@ -1,0 +1,36 @@
+on: [push, pull_request]
+
+name: Build
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Check for syntax-errors
+        run: composer run syntax-check
+
+      - name: Run lint
+        run: composer run lint
+
+      - name: Run Tests
+        run: |
+          mkdir -p build/logs
+          composer run test
+
+      - name: Check code coverage
+        run: composer run coverage-check
+
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: build/logs/coverage.xml
+          fail_ci_if_error: true
+
