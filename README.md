@@ -1,6 +1,6 @@
 # ACF PRO Installer
 
-[![Packagist](https://img.shields.io/packagist/v/pivvenit/acf-pro-installer.svg?maxAge=3600)](https://packagist.org/packages/pivvenit/acf-pro-installer)[![Packagist](https://img.shields.io/packagist/l/pivvenit/acf-pro-installer.svg?maxAge=2592000)](https://github.com/pivvenit/acf-pro-installer/blob/master/LICENSE)[![Build Status](https://travis-ci.org/pivvenit/acf-pro-installer.svg?branch=master)](https://travis-ci.org/pivvenit/acf-pro-installer)
+[![Packagist](https://img.shields.io/packagist/v/pivvenit/acf-pro-installer.svg?maxAge=3600)](https://packagist.org/packages/pivvenit/acf-pro-installer)[![Packagist](https://img.shields.io/packagist/l/pivvenit/acf-pro-installer.svg?maxAge=2592000)](https://github.com/pivvenit/acf-pro-installer/blob/master/LICENSE)![](https://github.com/pivvenit/acf-pro-installer/workflows/Build/badge.svg)
 [![Dependabot](https://badgen.net/badge/Dependabot/enabled/green?icon=dependabot)](https://dependabot.com/)
 [![Coverage Status](https://coveralls.io/repos/github/pivvenit/acf-pro-installer/badge.svg?branch=master)](https://coveralls.io/github/pivvenit/acf-pro-installer?branch=master)
 
