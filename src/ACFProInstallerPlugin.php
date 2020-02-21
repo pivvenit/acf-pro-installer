@@ -179,14 +179,7 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
         $queryParams['k'] = $this->getKeyFromEnv();
         $c['query'] = http_build_query($queryParams);
 
-        $auth = (isset($c['user']) && isset($c['pass']))
-            ? "{$c['user']}:{$c['pass']}@"
-            : "";
-        $port = (isset($c['port']) && !in_array($c['port'], ["443", "80"]))
-            ? ":{$c['port']}"
-            : "";
-
-        return "{$c['scheme']}://{$auth}{$c['host']}{$port}{$c['path']}?{$c['query']}";
+        return "{$c['scheme']}://{$c['host']}{$c['path']}?{$c['query']}";
     }
 
     /**
