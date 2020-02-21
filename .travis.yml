@@ -3,13 +3,13 @@ php:
   - '7.2'
   - '7.3'
 
+install:
+  - composer install --no-interaction
+
 before_script:
   - git fetch --unshallow
   - mkdir -p build/logs
-  - phpenv config-add travis.php.ini
-
-install:
-  - composer install --no-interaction
+  - phpenv config-add <(echo "memory_limit = 2G")
 
 script:
   - composer run-script lint
