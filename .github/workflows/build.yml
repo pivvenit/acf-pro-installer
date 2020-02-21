@@ -20,6 +20,6 @@ jobs:
       - name: Run lint
         run: composer run lint
 
-      - name: Run lint
+      - name: Run Tests
         run: composer run test
 
