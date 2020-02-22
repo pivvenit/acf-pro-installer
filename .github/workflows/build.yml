@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Fetch the entire git repository
         run: |
           git fetch --unshallow
       - name: Validate composer.json and composer.lock
