@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PivvenIT\Composer\Installers\ACFPro\Test\LicenseKeyProviders;
+namespace PivvenIT\Composer\Installers\ACFPro\Test\LicenseKey\Providers;
 
 use Composer\Config;
 use PHPUnit\Framework\TestCase;

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace LicenseKeyProviders\DotEnv;
+namespace PivvenIT\Composer\Installers\ACFPro\Test\LicenseKey\Providers\DotEnv;
 
 use PHPUnit\Framework\TestCase;
 use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\DotEnv\DotEnvAdapterFactory;

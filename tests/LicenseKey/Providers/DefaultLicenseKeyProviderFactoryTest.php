@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PivvenIT\Composer\Installers\ACFPro\Test\LicenseKeyProviders;
+namespace PivvenIT\Composer\Installers\ACFPro\Test\LicenseKey\Providers;
 
 use Composer\Composer;
 use Composer\Config;
@@ -21,7 +21,7 @@ class DefaultLicenseKeyProviderFactoryTest extends TestCase
         $composer->expects($this->once())->method('getConfig')->willReturn(new Config());
         $io = $this->createMock(IOInterface::class);
         $sut = new DefaultLicenseKeyProviderFactory();
-        /** @var CompositeLicenseKeyProvider $result */
+        /* @var CompositeLicenseKeyProvider $result */
         $result = $sut->build($composer, $io);
         $this->assertInstanceOf(CompositeLicenseKeyProvider::class, $result);
         $this->assertEquals(

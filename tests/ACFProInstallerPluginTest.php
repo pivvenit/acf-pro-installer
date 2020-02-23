@@ -66,11 +66,11 @@ class ACFProInstallerPluginTest extends TestCase
         $subscribedEvents = ACFProInstallerPlugin::getSubscribedEvents();
         $this->assertEquals(
             $subscribedEvents[PluginEvents::PRE_FILE_DOWNLOAD],
-            'addKey'
+            'onPreFileDownload'
         );
     }
 
-    public function testAddKeyCreatesCustomFilesystemWithOldValues()
+    public function testOnPreFileDownloadCreatesCustomFilesystemWithOldValues()
     {
         // Make key available in the ENVIRONMENT
         putenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME . '=KEY');
@@ -154,10 +154,10 @@ class ACFProInstallerPluginTest extends TestCase
         // Call addKey
         $plugin = new ACFProInstallerPlugin();
         $plugin->activate($composer, $io);
-        $plugin->addKey($event);
+        $plugin->onPreFileDownload($event);
     }
 
-    public function testAddKeyFromENV()
+    public function testOnPreFileDownloadFromENV()
     {
         // The key that should be available in the ENVIRONMENT
         $key = 'ENV_KEY';
@@ -239,10 +239,10 @@ class ACFProInstallerPluginTest extends TestCase
         // Call addKey
         $plugin = new ACFProInstallerPlugin();
         $plugin->activate($composer, $io);
-        $plugin->addKey($event);
+        $plugin->onPreFileDownload($event);
     }
 
-    public function testAddKeyFromDotEnv()
+    public function testOnPreFileDownloadFromDotEnv()
     {
         // The key that should be available in the .env file
         $key = 'DOT_ENV_KEY';
@@ -327,7 +327,7 @@ class ACFProInstallerPluginTest extends TestCase
         // Call addKey
         $plugin = new ACFProInstallerPlugin();
         $plugin->activate($composer, $io);
-        $plugin->addKey($event);
+        $plugin->onPreFileDownload($event);
     }
 
     public function testPreferKeyFromEnv()
@@ -419,7 +419,7 @@ class ACFProInstallerPluginTest extends TestCase
         // Call addKey
         $plugin = new ACFProInstallerPlugin();
         $plugin->activate($composer, $io);
-        $plugin->addKey($event);
+        $plugin->onPreFileDownload($event);
     }
 
     public function testThrowExceptionWhenKeyIsMissing()
@@ -476,7 +476,7 @@ class ACFProInstallerPluginTest extends TestCase
         // Call addKey
         $plugin = new ACFProInstallerPlugin();
         $plugin->activate($composer, $io);
-        $plugin->addKey($event);
+        $plugin->onPreFileDownload($event);
     }
 
     public function testOnlyAddKeyOnAcfUrl()
@@ -512,6 +512,6 @@ class ACFProInstallerPluginTest extends TestCase
 
         // Call addKey
         $plugin = new ACFProInstallerPlugin();
-        $plugin->addKey($event);
+        $plugin->onPreFileDownload($event);
     }
 }

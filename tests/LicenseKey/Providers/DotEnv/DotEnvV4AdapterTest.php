@@ -1,16 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace PivvenIT\Composer\Installers\ACFPro\Test\LicenseKeyProviders\DotEnv;
+namespace PivvenIT\Composer\Installers\ACFPro\Test\LicenseKey\Providers\DotEnv;
 
 use Composer\Util\Filesystem;
-use Dotenv\Dotenv;
 use PHPUnit\Framework\TestCase;
 use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\DotEnv\DotEnvAdapterFactory;
 use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\DotEnv\DotEnvV4Adapter;
 use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\EnvironmentVariableLicenseKeyProvider;
 
-class DotEnvV3AdapterTest extends TestCase
+class DotEnvV4AdapterTest extends TestCase
 {
     /**
      * @var string
@@ -27,9 +26,9 @@ class DotEnvV3AdapterTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        if (DotEnvAdapterFactory::isV4()) {
+        if (!DotEnvAdapterFactory::isV4()) {
             $this->markTestSkipped(
-                'This test run is performed using vlucas/phpdotenv ^4.0, skipping testing the ^3.0 tests'
+                'This test run is performed using vlucas/phpdotenv ^3.0, skipping testing the ^4.0 tests'
             );
             return;
         }

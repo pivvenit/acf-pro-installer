@@ -1,6 +1,7 @@
 <?php
+declare(strict_types=1);
 
-namespace PivvenIT\Composer\Installers\ACFPro;
+namespace PivvenIT\Composer\Installers\ACFPro\Download;
 
 use Composer\Config;
 use Composer\IO\IOInterface;
