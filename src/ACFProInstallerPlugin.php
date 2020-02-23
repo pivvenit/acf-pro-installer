@@ -39,13 +39,13 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
 
     /**
      * @access protected
-     * @var Composer
+     * @var    Composer
      */
     protected $composer;
 
     /**
      * @access protected
-     * @var IOInterface
+     * @var    IOInterface
      */
     protected $io;
 
@@ -71,8 +71,8 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * in the addKey method.
      *
      * @access public
-     * @param Composer $composer The composer object
-     * @param IOInterface $io Not used
+     * @param  Composer    $composer The composer object
+     * @param  IOInterface $io       Not used
      */
     public function activate(Composer $composer, IOInterface $io)
     {
@@ -105,7 +105,7 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * swap out the ACF PRO url with a url that contains the key.
      *
      * @access public
-     * @param PreFileDownloadEvent $event The event that called this method
+     * @param  PreFileDownloadEvent $event The event that called this method
      * @throws MissingKeyException
      */
     public function addKey(PreFileDownloadEvent $event)
@@ -129,7 +129,7 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * Test if the given url is the ACF PRO download url
      *
      * @access protected
-     * @param string The url that should be checked
+     * @param  string The url that should be checked
      * @return bool
      */
     protected function isAcfProPackageUrl($url)
@@ -143,6 +143,7 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * Loads the .env file that is in the same directory as composer.json
      * and gets the key from the environment variable KEY_ENV_VARIABLE.
      * Already set variables will not be overwritten by the variables in .env
+     *
      * @link https://github.com/vlucas/phpdotenv#immutability
      *
      * @access protected
@@ -162,7 +163,7 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
     /**
      * Adds the license key to the Advanced Custom Fields Url
      *
-     * @param string $url the url to append the key to
+     * @param  string $url the url to append the key to
      * @return string The new url with the appended license key
      * @throws MissingKeyException
      */

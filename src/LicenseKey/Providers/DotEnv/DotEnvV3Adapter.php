@@ -12,7 +12,9 @@ class DotEnvV3Adapter implements DotEnvAdapterInterface
      */
     public function load(string $path): void
     {
-        /** @noinspection PhpParamsInspection This is fallback code */
+        /**
+         * @noinspection PhpParamsInspection This is fallback code
+         */
         $dotenv = Dotenv::create(getcwd());
         $dotenv->safeLoad();
     }

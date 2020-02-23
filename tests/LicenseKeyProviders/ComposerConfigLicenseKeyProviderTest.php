@@ -13,11 +13,13 @@ class ComposerConfigLicenseKeyProviderTest extends TestCase
     {
         $key = '39b41b52-b404-4405-a9d2-904441363709'; // Don't bother, this key is not real
         $config = new Config();
-        $config->merge([
+        $config->merge(
+            [
             'config' => [
                 'acf-pro-key' => $key
             ]
-        ]);
+            ]
+        );
         $sut = new ComposerConfigLicenseKeyProvider($config);
         $this->assertEquals($key, $sut->provide());
     }
@@ -32,14 +34,16 @@ class ComposerConfigLicenseKeyProviderTest extends TestCase
     public function testProvideWithObjectInKeyReturnsNull()
     {
         $config = new Config();
-        $config->merge([
+        $config->merge(
+            [
             'config' => [
                 'acf-pro-key' => (object)[
                     "invalid" => true,
                     "unexpected" => true
                 ]
             ]
-        ]);
+            ]
+        );
         $sut = new ComposerConfigLicenseKeyProvider($config);
         $this->assertNull($sut->provide());
     }

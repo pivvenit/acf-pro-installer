@@ -14,8 +14,8 @@ interface LicenseKeyProviderFactoryInterface
     /**
      * Returns the correct LicenseKeyProvider given the environment
      *
-     * @param Composer $composer
-     * @param IOInterface $io
+     * @param  Composer    $composer
+     * @param  IOInterface $io
      * @return LicenseKeyProviderInterface
      */
     public function build(Composer $composer, IOInterface $io): LicenseKeyProviderInterface;

@@ -140,13 +140,16 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
         $json = file_get_contents($composerJsonPath);
         $composerData = json_decode($json);
         $devName = $this->getBranch();
-        array_unshift($composerData->repositories, (object)[
-            "type" => "vcs",
-            "url" => $pluginDir,
-            "options" => (object)[
-                "symlink" => false
+        array_unshift(
+            $composerData->repositories,
+            (object)[
+                "type" => "vcs",
+                "url" => $pluginDir,
+                "options" => (object)[
+                    "symlink" => false
+                ]
             ]
-        ]);
+        );
         $composerData->require->{"pivvenit/acf-pro-installer"} = "dev-{$devName} as 2.999.0";
         $composerData->repositories[] = (object)[
             "type" => "composer",

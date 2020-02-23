@@ -32,9 +32,13 @@ class DotEnvLicenseKeyProviderTest extends TestCase
     {
         $key = "d5bd0094-638f-45a1-b0db-fd0b1d01b453";
         $dotEnvProvider = $this->createMock(DotEnvAdapterInterface::class);
-        $dotEnvProvider->expects($this->once())->method('load')->will($this->returnCallback(function () use ($key) {
-            putenv(sprintf("%s=%s", EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME, $key));
-        }));
+        $dotEnvProvider->expects($this->once())->method('load')->will(
+            $this->returnCallback(
+                function () use ($key) {
+                    putenv(sprintf("%s=%s", EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME, $key));
+                }
+            )
+        );
         $sut = new DotEnvLicenseKeyProvider($dotEnvProvider);
         $this->assertEquals($key, $sut->provide());
     }

@@ -7,6 +7,7 @@ namespace PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers;
  * Interface for different kinds of loading an ACF PRO License Key
  *
  * Interface LicenseKeyProviderInterface
+ *
  * @package PivvenIT\Composer\Installers\ACFPro\LicenseKeyProviders
  */
 interface LicenseKeyProviderInterface

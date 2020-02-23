@@ -14,11 +14,11 @@ class ACFProInstallerPluginTest extends TestCase
     const REPO_NAME = 'advanced-custom-fields/advanced-custom-fields-pro';
     const REPO_TYPE = 'wordpress-plugin';
     const REPO_URL =
-      'https://connect.advancedcustomfields.com/index.php?p=pro&a=download';
+        'https://connect.advancedcustomfields.com/index.php?p=pro&a=download';
 
     private static $actualWorkingDirectory;
 
-    public static function setUpBeforeClass() : void
+    public static function setUpBeforeClass(): void
     {
         self::$actualWorkingDirectory = getcwd();
         $testId = uniqid("acf-pro-installer-test");
@@ -27,19 +27,19 @@ class ACFProInstallerPluginTest extends TestCase
         chdir($tempWorkDir);
     }
 
-    public static function tearDownAfterClass() : void
+    public static function tearDownAfterClass(): void
     {
         chdir(self::$actualWorkingDirectory);
     }
 
-    protected function tearDown() : void
+    protected function tearDown(): void
     {
         // Unset the environment variable after every test
         // See: http://stackoverflow.com/a/34065522
         putenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME);
 
         // Delete the .env file
-        $dotenv = getcwd().DIRECTORY_SEPARATOR.'.env';
+        $dotenv = getcwd() . DIRECTORY_SEPARATOR . '.env';
         if (file_exists($dotenv)) {
             unlink($dotenv);
         }
@@ -80,10 +80,10 @@ class ACFProInstallerPluginTest extends TestCase
         $tlsDisabled = true;
 
         $rfs = $this
-             ->getMockBuilder('Composer\Util\RemoteFilesystem')
-             ->disableOriginalConstructor()
-             ->setMethods(['getOptions', 'isTlsDisabled'])
-             ->getMock();
+            ->getMockBuilder('Composer\Util\RemoteFilesystem')
+            ->disableOriginalConstructor()
+            ->setMethods(['getOptions', 'isTlsDisabled'])
+            ->getMock();
 
         $rfs
             ->expects($this->once())
@@ -97,14 +97,14 @@ class ACFProInstallerPluginTest extends TestCase
 
         // Mock Config
         $config = $this
-                ->getMockBuilder('Composer\Config')
-                ->getMock();
+            ->getMockBuilder('Composer\Config')
+            ->getMock();
 
         // Mock Composer
         $composer = $this
-                  ->getMockBuilder('Composer\Composer')
-                  ->setMethods(['getConfig'])
-                  ->getMock();
+            ->getMockBuilder('Composer\Composer')
+            ->setMethods(['getConfig'])
+            ->getMock();
 
         $composer
             ->method('getConfig')
@@ -117,14 +117,16 @@ class ACFProInstallerPluginTest extends TestCase
 
         // Mock an Event
         $event = $this
-               ->getMockBuilder('Composer\Plugin\PreFileDownloadEvent')
-               ->disableOriginalConstructor()
-               ->setMethods([
-                   'getProcessedUrl',
-                   'getRemoteFilesystem',
-                   'setRemoteFilesystem'
-               ])
-               ->getMock();
+            ->getMockBuilder('Composer\Plugin\PreFileDownloadEvent')
+            ->disableOriginalConstructor()
+            ->setMethods(
+                [
+                    'getProcessedUrl',
+                    'getRemoteFilesystem',
+                    'setRemoteFilesystem'
+                ]
+            )
+            ->getMock();
 
         $event
             ->expects($this->once())
@@ -139,13 +141,15 @@ class ACFProInstallerPluginTest extends TestCase
         $event
             ->expects($this->once())
             ->method('setRemoteFilesystem')
-            ->with($this->callback(
-                function ($rfs) use ($config, $io, $options, $tlsDisabled) {
-                    $this->assertEquals($options, $rfs->getOptions());
-                    $this->assertEquals($tlsDisabled, $rfs->isTlsDisabled());
-                    return true;
-                }
-            ));
+            ->with(
+                $this->callback(
+                    function ($rfs) use ($config, $io, $options, $tlsDisabled) {
+                        $this->assertEquals($options, $rfs->getOptions());
+                        $this->assertEquals($tlsDisabled, $rfs->isTlsDisabled());
+                        return true;
+                    }
+                )
+            );
 
         // Call addKey
         $plugin = new ACFProInstallerPlugin();
@@ -163,10 +167,10 @@ class ACFProInstallerPluginTest extends TestCase
 
         // Mock a RemoteFilesystem
         $rfs = $this
-             ->getMockBuilder('Composer\Util\RemoteFilesystem')
-             ->disableOriginalConstructor()
-             ->setMethods(['getOptions', 'isTlsDisabled'])
-             ->getMock();
+            ->getMockBuilder('Composer\Util\RemoteFilesystem')
+            ->disableOriginalConstructor()
+            ->setMethods(['getOptions', 'isTlsDisabled'])
+            ->getMock();
 
         $rfs
             ->expects($this->once())
@@ -180,14 +184,14 @@ class ACFProInstallerPluginTest extends TestCase
 
         // Mock Config
         $config = $this
-                ->getMockBuilder('Composer\Config')
-                ->getMock();
+            ->getMockBuilder('Composer\Config')
+            ->getMock();
 
         // Mock Composer
         $composer = $this
-                  ->getMockBuilder('Composer\Composer')
-                  ->setMethods(['getConfig'])
-                  ->getMock();
+            ->getMockBuilder('Composer\Composer')
+            ->setMethods(['getConfig'])
+            ->getMock();
 
         $composer
             ->method('getConfig')
@@ -200,14 +204,16 @@ class ACFProInstallerPluginTest extends TestCase
 
         // Mock an Event
         $event = $this
-               ->getMockBuilder('Composer\Plugin\PreFileDownloadEvent')
-               ->disableOriginalConstructor()
-               ->setMethods([
-                   'getProcessedUrl',
-                   'getRemoteFilesystem',
-                   'setRemoteFilesystem'
-               ])
-               ->getMock();
+            ->getMockBuilder('Composer\Plugin\PreFileDownloadEvent')
+            ->disableOriginalConstructor()
+            ->setMethods(
+                [
+                    'getProcessedUrl',
+                    'getRemoteFilesystem',
+                    'setRemoteFilesystem'
+                ]
+            )
+            ->getMock();
 
         $event
             ->expects($this->once())
@@ -222,11 +228,13 @@ class ACFProInstallerPluginTest extends TestCase
         $event
             ->expects($this->once())
             ->method('setRemoteFilesystem')
-            ->with($this->callback(
-                function ($rfs) use ($key) {
-                    return true;
-                }
-            ));
+            ->with(
+                $this->callback(
+                    function ($rfs) use ($key) {
+                        return true;
+                    }
+                )
+            );
 
         // Call addKey
         $plugin = new ACFProInstallerPlugin();
@@ -241,16 +249,16 @@ class ACFProInstallerPluginTest extends TestCase
 
         // Make key available in the .env file
         file_put_contents(
-            getcwd().DIRECTORY_SEPARATOR.'.env',
+            getcwd() . DIRECTORY_SEPARATOR . '.env',
             EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME . '=' . $key
         );
 
         // Mock a RemoteFilesystem
         $rfs = $this
-             ->getMockBuilder('Composer\Util\RemoteFilesystem')
-             ->disableOriginalConstructor()
-             ->setMethods(['getOptions', 'isTlsDisabled'])
-             ->getMock();
+            ->getMockBuilder('Composer\Util\RemoteFilesystem')
+            ->disableOriginalConstructor()
+            ->setMethods(['getOptions', 'isTlsDisabled'])
+            ->getMock();
 
         $rfs
             ->expects($this->once())
@@ -264,14 +272,14 @@ class ACFProInstallerPluginTest extends TestCase
 
         // Mock Config
         $config = $this
-                ->getMockBuilder('Composer\Config')
-                ->getMock();
+            ->getMockBuilder('Composer\Config')
+            ->getMock();
 
         // Mock Composer
         $composer = $this
-                  ->getMockBuilder('Composer\Composer')
-                  ->setMethods(['getConfig'])
-                  ->getMock();
+            ->getMockBuilder('Composer\Composer')
+            ->setMethods(['getConfig'])
+            ->getMock();
 
         $composer
             ->method('getConfig')
@@ -284,14 +292,16 @@ class ACFProInstallerPluginTest extends TestCase
 
         // Mock an Event
         $event = $this
-               ->getMockBuilder('Composer\Plugin\PreFileDownloadEvent')
-               ->disableOriginalConstructor()
-               ->setMethods([
-                   'getProcessedUrl',
-                   'getRemoteFilesystem',
-                   'setRemoteFilesystem'
-               ])
-               ->getMock();
+            ->getMockBuilder('Composer\Plugin\PreFileDownloadEvent')
+            ->disableOriginalConstructor()
+            ->setMethods(
+                [
+                    'getProcessedUrl',
+                    'getRemoteFilesystem',
+                    'setRemoteFilesystem'
+                ]
+            )
+            ->getMock();
 
         $event
             ->expects($this->once())
@@ -306,11 +316,13 @@ class ACFProInstallerPluginTest extends TestCase
         $event
             ->expects($this->once())
             ->method('setRemoteFilesystem')
-            ->with($this->callback(
-                function ($rfs) use ($key) {
-                    return true;
-                }
-            ));
+            ->with(
+                $this->callback(
+                    function ($rfs) use ($key) {
+                        return true;
+                    }
+                )
+            );
 
         // Call addKey
         $plugin = new ACFProInstallerPlugin();
@@ -326,7 +338,7 @@ class ACFProInstallerPluginTest extends TestCase
 
         // Make key available in the .env file
         file_put_contents(
-            getcwd().DIRECTORY_SEPARATOR.'.env',
+            getcwd() . DIRECTORY_SEPARATOR . '.env',
             EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME . '=' . $fileKey
         );
 
@@ -335,10 +347,10 @@ class ACFProInstallerPluginTest extends TestCase
 
         // Mock a RemoteFilesystem
         $rfs = $this
-             ->getMockBuilder('Composer\Util\RemoteFilesystem')
-             ->disableOriginalConstructor()
-             ->setMethods(['getOptions', 'isTlsDisabled'])
-             ->getMock();
+            ->getMockBuilder('Composer\Util\RemoteFilesystem')
+            ->disableOriginalConstructor()
+            ->setMethods(['getOptions', 'isTlsDisabled'])
+            ->getMock();
 
         $rfs
             ->expects($this->once())
@@ -352,14 +364,14 @@ class ACFProInstallerPluginTest extends TestCase
 
         // Mock Config
         $config = $this
-                ->getMockBuilder('Composer\Config')
-                ->getMock();
+            ->getMockBuilder('Composer\Config')
+            ->getMock();
 
         // Mock Composer
         $composer = $this
-                  ->getMockBuilder('Composer\Composer')
-                  ->setMethods(['getConfig'])
-                  ->getMock();
+            ->getMockBuilder('Composer\Composer')
+            ->setMethods(['getConfig'])
+            ->getMock();
 
         $composer
             ->method('getConfig')
@@ -372,14 +384,16 @@ class ACFProInstallerPluginTest extends TestCase
 
         // Mock an Event
         $event = $this
-               ->getMockBuilder('Composer\Plugin\PreFileDownloadEvent')
-               ->disableOriginalConstructor()
-               ->setMethods([
-                   'getProcessedUrl',
-                   'getRemoteFilesystem',
-                   'setRemoteFilesystem'
-               ])
-               ->getMock();
+            ->getMockBuilder('Composer\Plugin\PreFileDownloadEvent')
+            ->disableOriginalConstructor()
+            ->setMethods(
+                [
+                    'getProcessedUrl',
+                    'getRemoteFilesystem',
+                    'setRemoteFilesystem'
+                ]
+            )
+            ->getMock();
 
         $event
             ->expects($this->once())
@@ -394,11 +408,13 @@ class ACFProInstallerPluginTest extends TestCase
         $event
             ->expects($this->once())
             ->method('setRemoteFilesystem')
-            ->with($this->callback(
-                function ($rfs) use ($key) {
-                    return true;
-                }
-            ));
+            ->with(
+                $this->callback(
+                    function ($rfs) use ($key) {
+                        return true;
+                    }
+                )
+            );
 
         // Call addKey
         $plugin = new ACFProInstallerPlugin();
@@ -431,19 +447,21 @@ class ACFProInstallerPluginTest extends TestCase
 
         // Mock a RemoteFilesystem
         $rfs = $this
-             ->getMockBuilder('Composer\Util\RemoteFilesystem')
-             ->disableOriginalConstructor()
-             ->getMock();
+            ->getMockBuilder('Composer\Util\RemoteFilesystem')
+            ->disableOriginalConstructor()
+            ->getMock();
 
         // Mock an Event
         $event = $this
-               ->getMockBuilder('Composer\Plugin\PreFileDownloadEvent')
-               ->disableOriginalConstructor()
-               ->setMethods([
-                   'getProcessedUrl',
-                   'getRemoteFilesystem'
-               ])
-               ->getMock();
+            ->getMockBuilder('Composer\Plugin\PreFileDownloadEvent')
+            ->disableOriginalConstructor()
+            ->setMethods(
+                [
+                    'getProcessedUrl',
+                    'getRemoteFilesystem'
+                ]
+            )
+            ->getMock();
 
         $event
             ->expects($this->once())
@@ -468,14 +486,16 @@ class ACFProInstallerPluginTest extends TestCase
 
         // Mock an Event
         $event = $this
-               ->getMockBuilder('Composer\Plugin\PreFileDownloadEvent')
-               ->disableOriginalConstructor()
-               ->setMethods([
-                   'getProcessedUrl',
-                   'getRemoteFilesystem',
-                   'setRemoteFilesystem'
-               ])
-               ->getMock();
+            ->getMockBuilder('Composer\Plugin\PreFileDownloadEvent')
+            ->disableOriginalConstructor()
+            ->setMethods(
+                [
+                    'getProcessedUrl',
+                    'getRemoteFilesystem',
+                    'setRemoteFilesystem'
+                ]
+            )
+            ->getMock();
 
         $event
             ->expects($this->once())

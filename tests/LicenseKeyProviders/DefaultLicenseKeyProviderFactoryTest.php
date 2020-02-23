@@ -24,12 +24,18 @@ class DefaultLicenseKeyProviderFactoryTest extends TestCase
         /** @var CompositeLicenseKeyProvider $result */
         $result = $sut->build($composer, $io);
         $this->assertInstanceOf(CompositeLicenseKeyProvider::class, $result);
-        $this->assertEquals([
+        $this->assertEquals(
+            [
             DotEnvLicenseKeyProvider::class,
             EnvironmentVariableLicenseKeyProvider::class,
             ComposerConfigLicenseKeyProvider::class
-        ], array_map(function ($provider) {
-            return get_class($provider);
-        }, $result->getProviders()));
+            ],
+            array_map(
+                function ($provider) {
+                    return get_class($provider);
+                },
+                $result->getProviders()
+            )
+        );
     }
 }
