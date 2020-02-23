@@ -8,8 +8,9 @@ use Composer\IO\IOInterface;
 use Composer\Plugin\PluginEvents;
 use Composer\Plugin\PluginInterface;
 use Composer\Plugin\PreFileDownloadEvent;
-use Dotenv\Dotenv;
 use PivvenIT\Composer\Installers\ACFPro\Exceptions\MissingKeyException;
+use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\DefaultLicenseKeyProviderFactory;
+use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\LicenseKeyProviderFactoryInterface;
 
 /**
  * A composer plugin that makes installing ACF PRO possible
@@ -26,12 +27,6 @@ use PivvenIT\Composer\Installers\ACFPro\Exceptions\MissingKeyException;
  */
 class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
 {
-    /**
-     * The name of the environment variable
-     * where the ACF PRO key should be stored.
-     */
-    private const KEY_ENV_VARIABLE = 'ACF_PRO_KEY';
-
     /**
      * The name of the ACF PRO package
      */
@@ -55,15 +50,18 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
     protected $io;
 
     /**
-     * Name of the key used as environment variable
-     *
-     * @var string
+     * @var LicenseKeyProviderFactoryInterface
      */
-    private $envKeyName;
+    private $licenseKeyProviderFactory;
 
-    public function __construct($envKeyName = self::KEY_ENV_VARIABLE)
+    /**
+     * ACFProInstallerPlugin constructor.
+     *
+     * @param LicenseKeyProviderFactoryInterface|null $licenseKeyProviderFactory
+     */
+    public function __construct(LicenseKeyProviderFactoryInterface $licenseKeyProviderFactory = null)
     {
-        $this->envKeyName = $envKeyName;
+        $this->licenseKeyProviderFactory = $licenseKeyProviderFactory ?? new DefaultLicenseKeyProviderFactory();
     }
 
     /**
@@ -153,14 +151,11 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      */
     protected function getKeyFromEnv()
     {
-        if (file_exists(getcwd() . DIRECTORY_SEPARATOR . '.env')) {
-            $this->loadEnvFile();
+        $licenseKeyProvider = $this->licenseKeyProviderFactory->build($this->composer, $this->io);
+        $key = $licenseKeyProvider->provide();
+        if ($key === null) {
+            throw new MissingKeyException("No valid license key could be found");
         }
-        $key = getenv($this->envKeyName);
-        if (empty($key)) {
-            throw new MissingKeyException($this->envKeyName);
-        }
-
         return $key;
     }
 
@@ -180,20 +175,5 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
         $c['query'] = http_build_query($queryParams);
 
         return "{$c['scheme']}://{$c['host']}{$c['path']}?{$c['query']}";
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    protected function loadEnvFile(): void
-    {
-        if (method_exists(Dotenv::class, 'createImmutable')) {
-            // vlucas/phpdotenv ^4.0
-            $dotenv = Dotenv::createImmutable(getcwd());
-        } else {
-            // vlucas/phpdotenv ^3.0
-            $dotenv = Dotenv::create(getcwd());
-        }
-        $dotenv->load();
     }
 }

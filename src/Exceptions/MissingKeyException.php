@@ -15,9 +15,7 @@ class MissingKeyException extends Exception
         Exception $previous = null
     ) {
         parent::__construct(
-            'Could not find a key for ACF PRO. ' .
-            'Please make it available via the environment variable ' .
-            $message,
+            "Could not find a license key for ACF PRO. {$message}",
             $code,
             $previous
         );

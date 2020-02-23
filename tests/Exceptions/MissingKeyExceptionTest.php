@@ -9,12 +9,10 @@ class MissingKeyExceptionTest extends TestCase
 {
     public function testMessage()
     {
-        $message = 'FIELD';
+        $message = 'testMessage';
         $e = new MissingKeyException($message);
         $this->assertEquals(
-            'Could not find a key for ACF PRO. ' .
-            'Please make it available via the environment variable ' .
-            $message,
+            "Could not find a license key for ACF PRO. {$message}",
             $e->getMessage()
         );
     }

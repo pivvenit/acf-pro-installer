@@ -9,6 +9,7 @@ use PHPUnit\Framework\TestCase;
 use PivvenIT\Composer\Installers\ACFPro\Exceptions\MissingKeyException;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\StringInput;
+use Symfony\Component\Console\Output\StreamOutput;
 
 class ACFProInstallerPluginIntegrationTest extends TestCase
 {
@@ -44,7 +45,7 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
 
     public static function tearDownAfterClass(): void
     {
-        // no operation
+        putenv(self::KEY_ENV_VARIABLE);
     }
 
     /**
@@ -55,7 +56,8 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
         parent::setUp();
         $this->fs = new Filesystem();
         $testId = uniqid("acf-pro-installer-test");
-        $this->testPath = sys_get_temp_dir() . "/{$testId}";
+        $directorySeparator = DIRECTORY_SEPARATOR;
+        $this->testPath = sys_get_temp_dir() . "{$directorySeparator}{$testId}";
         $this->fs->ensureDirectoryExists($this->testPath);
         ini_set('memory_limit', '512M');
     }
@@ -67,6 +69,7 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
     {
         parent::tearDown();
         $this->fs->removeDirectory($this->testPath);
+        putenv(self::KEY_ENV_VARIABLE);
     }
 
     public function testWithSpecificVersionInstallWorksCorrectly()
@@ -111,7 +114,12 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
         $input = new StringInput("create-project roots/bedrock {$this->testPath}");
         $application = new Application();
         $application->setAutoExit(false);
-        $application->run($input);
+        $stream = fopen("php://temp", "w+");
+        $output = new StreamOutput($stream);
+        $returnCode = $application->run($input, $output);
+        rewind($stream);
+        $this->assertSame(0, $returnCode, stream_get_contents($stream));
+        fclose($stream);
 
         // Modify the composer file
         $this->appendToComposer();
@@ -127,7 +135,8 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
     private function appendToComposer()
     {
         $pluginDir = $this->getPluginDirectory();
-        $composerJsonPath = "{$this->testPath}/composer.json";
+        $directorySeparator = DIRECTORY_SEPARATOR;
+        $composerJsonPath = "{$this->testPath}{$directorySeparator}composer.json";
         $json = file_get_contents($composerJsonPath);
         $composerData = json_decode($json);
         $devName = $this->getBranch();
@@ -185,7 +194,8 @@ class ACFProInstallerPluginIntegrationTest extends TestCase
      */
     private function getPluginDirectory()
     {
-        $pluginDir = realpath(__DIR__ . "/../");
+        $directorySeparator = DIRECTORY_SEPARATOR;
+        $pluginDir = realpath(__DIR__ . "{$directorySeparator}..{$directorySeparator}");
         return $pluginDir;
     }
 

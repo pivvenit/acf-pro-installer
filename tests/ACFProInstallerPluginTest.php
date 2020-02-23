@@ -2,10 +2,12 @@
 
 namespace PivvenIT\Composer\Installers\ACFPro\Test;
 
+use Composer\Config;
 use Composer\Plugin\PluginEvents;
 use PHPUnit\Framework\TestCase;
 use PivvenIT\Composer\Installers\ACFPro\ACFProInstallerPlugin;
 use PivvenIT\Composer\Installers\ACFPro\Exceptions\MissingKeyException;
+use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\EnvironmentVariableLicenseKeyProvider;
 
 class ACFProInstallerPluginTest extends TestCase
 {
@@ -13,7 +15,6 @@ class ACFProInstallerPluginTest extends TestCase
     const REPO_TYPE = 'wordpress-plugin';
     const REPO_URL =
       'https://connect.advancedcustomfields.com/index.php?p=pro&a=download';
-    const KEY_ENV_VARIABLE = 'ACF_PRO_TEST_KEY';
 
     private static $actualWorkingDirectory;
 
@@ -35,7 +36,7 @@ class ACFProInstallerPluginTest extends TestCase
     {
         // Unset the environment variable after every test
         // See: http://stackoverflow.com/a/34065522
-        putenv(self::KEY_ENV_VARIABLE);
+        putenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME);
 
         // Delete the .env file
         $dotenv = getcwd().DIRECTORY_SEPARATOR.'.env';
@@ -48,7 +49,7 @@ class ACFProInstallerPluginTest extends TestCase
     {
         $this->assertInstanceOf(
             'Composer\Plugin\PluginInterface',
-            new ACFProInstallerPlugin(self::KEY_ENV_VARIABLE)
+            new ACFProInstallerPlugin()
         );
     }
 
@@ -56,7 +57,7 @@ class ACFProInstallerPluginTest extends TestCase
     {
         $this->assertInstanceOf(
             'Composer\EventDispatcher\EventSubscriberInterface',
-            new ACFProInstallerPlugin(self::KEY_ENV_VARIABLE)
+            new ACFProInstallerPlugin()
         );
     }
 
@@ -72,7 +73,7 @@ class ACFProInstallerPluginTest extends TestCase
     public function testAddKeyCreatesCustomFilesystemWithOldValues()
     {
         // Make key available in the ENVIRONMENT
-        putenv(self::KEY_ENV_VARIABLE . '=KEY');
+        putenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME . '=KEY');
 
         // Mock a RemoteFilesystem
         $options = ['options' => 'array'];
@@ -106,7 +107,6 @@ class ACFProInstallerPluginTest extends TestCase
                   ->getMock();
 
         $composer
-            ->expects($this->once())
             ->method('getConfig')
             ->willReturn($config);
 
@@ -148,7 +148,7 @@ class ACFProInstallerPluginTest extends TestCase
             ));
 
         // Call addKey
-        $plugin = new ACFProInstallerPlugin(self::KEY_ENV_VARIABLE);
+        $plugin = new ACFProInstallerPlugin();
         $plugin->activate($composer, $io);
         $plugin->addKey($event);
     }
@@ -159,7 +159,7 @@ class ACFProInstallerPluginTest extends TestCase
         $key = 'ENV_KEY';
 
         // Make key available in the ENVIRONMENT
-        putenv(self::KEY_ENV_VARIABLE . '=' . $key);
+        putenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME . '=' . $key);
 
         // Mock a RemoteFilesystem
         $rfs = $this
@@ -190,7 +190,6 @@ class ACFProInstallerPluginTest extends TestCase
                   ->getMock();
 
         $composer
-            ->expects($this->once())
             ->method('getConfig')
             ->willReturn($config);
 
@@ -230,7 +229,7 @@ class ACFProInstallerPluginTest extends TestCase
             ));
 
         // Call addKey
-        $plugin = new ACFProInstallerPlugin(self::KEY_ENV_VARIABLE);
+        $plugin = new ACFProInstallerPlugin();
         $plugin->activate($composer, $io);
         $plugin->addKey($event);
     }
@@ -243,7 +242,7 @@ class ACFProInstallerPluginTest extends TestCase
         // Make key available in the .env file
         file_put_contents(
             getcwd().DIRECTORY_SEPARATOR.'.env',
-            self::KEY_ENV_VARIABLE . '=' . $key
+            EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME . '=' . $key
         );
 
         // Mock a RemoteFilesystem
@@ -275,7 +274,6 @@ class ACFProInstallerPluginTest extends TestCase
                   ->getMock();
 
         $composer
-            ->expects($this->once())
             ->method('getConfig')
             ->willReturn($config);
 
@@ -315,7 +313,7 @@ class ACFProInstallerPluginTest extends TestCase
             ));
 
         // Call addKey
-        $plugin = new ACFProInstallerPlugin(self::KEY_ENV_VARIABLE);
+        $plugin = new ACFProInstallerPlugin();
         $plugin->activate($composer, $io);
         $plugin->addKey($event);
     }
@@ -329,11 +327,11 @@ class ACFProInstallerPluginTest extends TestCase
         // Make key available in the .env file
         file_put_contents(
             getcwd().DIRECTORY_SEPARATOR.'.env',
-            self::KEY_ENV_VARIABLE . '=' . $fileKey
+            EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME . '=' . $fileKey
         );
 
         // Make key available in the ENVIRONMENT
-        putenv(self::KEY_ENV_VARIABLE . '=' . $key);
+        putenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME . '=' . $key);
 
         // Mock a RemoteFilesystem
         $rfs = $this
@@ -364,7 +362,6 @@ class ACFProInstallerPluginTest extends TestCase
                   ->getMock();
 
         $composer
-            ->expects($this->once())
             ->method('getConfig')
             ->willReturn($config);
 
@@ -404,7 +401,7 @@ class ACFProInstallerPluginTest extends TestCase
             ));
 
         // Call addKey
-        $plugin = new ACFProInstallerPlugin(self::KEY_ENV_VARIABLE);
+        $plugin = new ACFProInstallerPlugin();
         $plugin->activate($composer, $io);
         $plugin->addKey($event);
     }
@@ -414,8 +411,23 @@ class ACFProInstallerPluginTest extends TestCase
         // Expect an Exception
         $this->expectException(
             MissingKeyException::class,
-            self::KEY_ENV_VARIABLE
+            EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME
         );
+
+        // Mock Composer
+        $composer = $this
+            ->getMockBuilder('Composer\Composer')
+            ->setMethods(['getConfig'])
+            ->getMock();
+
+        $composer
+            ->method('getConfig')
+            ->willReturn(new Config());
+
+        // Mock IOInterface
+        $io = $this
+            ->getMockBuilder('Composer\IO\IOInterface')
+            ->getMock();
 
         // Mock a RemoteFilesystem
         $rfs = $this
@@ -444,14 +456,15 @@ class ACFProInstallerPluginTest extends TestCase
             ->willReturn($rfs);
 
         // Call addKey
-        $plugin = new ACFProInstallerPlugin(self::KEY_ENV_VARIABLE);
+        $plugin = new ACFProInstallerPlugin();
+        $plugin->activate($composer, $io);
         $plugin->addKey($event);
     }
 
     public function testOnlyAddKeyOnAcfUrl()
     {
         // Make key available in the ENVIRONMENT
-        putenv(self::KEY_ENV_VARIABLE . '=KEY');
+        putenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME . '=KEY');
 
         // Mock an Event
         $event = $this
@@ -478,7 +491,7 @@ class ACFProInstallerPluginTest extends TestCase
             ->method('setRemoteFilesystem');
 
         // Call addKey
-        $plugin = new ACFProInstallerPlugin(self::KEY_ENV_VARIABLE);
+        $plugin = new ACFProInstallerPlugin();
         $plugin->addKey($event);
     }
 }
