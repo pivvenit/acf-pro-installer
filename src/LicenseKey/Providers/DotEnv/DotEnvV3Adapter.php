@@ -5,6 +5,9 @@ namespace PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\DotEnv;
 
 use Dotenv\Dotenv;
 
+/**
+ * @codeCoverageIgnore
+ */
 class DotEnvV3Adapter implements DotEnvAdapterInterface
 {
     /**
