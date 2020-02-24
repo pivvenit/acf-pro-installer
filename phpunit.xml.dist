@@ -1,8 +1,8 @@
 <phpunit bootstrap="vendor/autoload.php">
 
   <testsuites>
-    <testsuite name="ACF PRO Installer Test Suite">
-      <directory>tests</directory>
+    <testsuite name="ACF PRO Installer Unit Test Suite">
+      <directory>tests/unit</directory>
     </testsuite>
   </testsuites>
 

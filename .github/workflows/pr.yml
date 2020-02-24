@@ -1,0 +1,45 @@
+on: [pull_request]
+
+name: Build Pull Request
+
+jobs:
+  build-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Fetch the entire git repository
+        run: |
+          git fetch --unshallow
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Check for syntax-errors
+        run: composer run syntax-check
+
+      - name: Run lint
+        run: composer run lint
+
+      - name: Run Tests
+        env:
+          ACF_PRO_KEY: ${{ secrets.ACF_PRO_KEY }}
+        run: |
+          mkdir -p build/logs
+          composer run test
+
+      - name: Check code coverage
+        run: composer run coverage-check
+
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: build/logs/clover.xml
+          fail_ci_if_error: true
+
+      - name: Run Integration tests
+        run: |
+          cd tests/integration && docker-compose up --force-recreate --exit-code-from=composer
+
+

@@ -1,0 +1,72 @@
+{
+  "packages": {
+    "advanced-custom-fields/advanced-custom-fields-pro": {
+      "dev-master": {
+        "name": "advanced-custom-fields/advanced-custom-fields-pro",
+        "description": "Advanced Custom Fields PRO",
+        "version": "dev-master",
+        "type": "wpackagist-plugin",
+        "license": "GPL-2.0-or-later",
+        "authors": [
+          {
+            "name": "Elliot Condon",
+            "homepage": "http://www.elliotcondon.com",
+            "role": "Maintainer"
+          },
+          {
+            "name": "PivvenIT",
+            "homepage": "https://pivvenit.nl",
+            "role": "Composer Repository maintainer"
+          }
+        ],
+        "support": {
+          "docs": "https://www.advancedcustomfields.com/resources/",
+          "forum": "https://support.advancedcustomfields.com/topics/"
+        },
+        "homepage": "https://www.advancedcustomfields.com/",
+        "keywords": "acf, advanced, custom, field, fields, form, repeater, content",
+        "dist": {
+          "type": "zip",
+          "url": "https://connect.advancedcustomfields.com/index.php?p=pro&a=download&t=5.8.7"
+        },
+        "require": {
+          "pivvenit/acf-pro-installer": "*",
+          "composer/installers": "~1.0"
+        }
+      },
+      "5.8.7": {
+        "name": "advanced-custom-fields/advanced-custom-fields-pro",
+        "description": "Advanced Custom Fields PRO",
+        "version": "5.8.7",
+        "type": "wpackagist-plugin",
+        "license": "GPL-2.0-or-later",
+        "authors": [
+          {
+            "name": "Elliot Condon",
+            "homepage": "http://www.elliotcondon.com",
+            "role": "Maintainer"
+          },
+          {
+            "name": "PivvenIT",
+            "homepage": "https://pivvenit.nl",
+            "role": "Composer Repository maintainer"
+          }
+        ],
+        "support": {
+          "docs": "https://www.advancedcustomfields.com/resources/",
+          "forum": "https://support.advancedcustomfields.com/topics/"
+        },
+        "homepage": "https://www.advancedcustomfields.com/",
+        "keywords": "acf, advanced, custom, field, fields, form, repeater, content",
+        "dist": {
+          "type": "zip",
+          "url": "https://connect.advancedcustomfields.com/index.php?p=pro&a=download&t=5.8.7"
+        },
+        "require": {
+          "pivvenit/acf-pro-installer": "*",
+          "composer/installers": "~1.0"
+        }
+      }
+    }
+  }
+}
