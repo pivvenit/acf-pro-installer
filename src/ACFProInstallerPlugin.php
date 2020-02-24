@@ -31,11 +31,6 @@ use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\LicenseKeyProviderF
 class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
 {
     /**
-     * The name of the ACF PRO package
-     */
-    const ACF_PRO_PACKAGE_NAME = 'advanced-custom-fields/advanced-custom-fields-pro';
-
-    /**
      * @access protected
      * @var    Composer
      */

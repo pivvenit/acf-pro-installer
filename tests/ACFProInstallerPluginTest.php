@@ -2,63 +2,33 @@
 
 namespace PivvenIT\Composer\Installers\ACFPro\Test;
 
+use Composer\Composer;
 use Composer\Config;
+use Composer\EventDispatcher\EventSubscriberInterface;
+use Composer\IO\IOInterface;
 use Composer\Plugin\PluginEvents;
+use Composer\Plugin\PluginInterface;
+use Composer\Plugin\PreFileDownloadEvent;
+use Composer\Util\RemoteFilesystem;
 use PHPUnit\Framework\TestCase;
 use PivvenIT\Composer\Installers\ACFPro\ACFProInstallerPlugin;
+use PivvenIT\Composer\Installers\ACFPro\Download\DownloadMatcherInterface;
+use PivvenIT\Composer\Installers\ACFPro\Download\RewriteUrlRemoteFilesystem;
 use PivvenIT\Composer\Installers\ACFPro\Exceptions\MissingKeyException;
-use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\EnvironmentVariableLicenseKeyProvider;
+use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Appenders\UrlLicenseKeyAppenderInterface;
+use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\LicenseKeyProviderFactoryInterface;
+use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\LicenseKeyProviderInterface;
 
 class ACFProInstallerPluginTest extends TestCase
 {
-    const REPO_NAME = 'advanced-custom-fields/advanced-custom-fields-pro';
-    const REPO_TYPE = 'wordpress-plugin';
-    const REPO_URL =
-        'https://connect.advancedcustomfields.com/index.php?p=pro&a=download';
-
-    private static $actualWorkingDirectory;
-
-    public static function setUpBeforeClass(): void
-    {
-        self::$actualWorkingDirectory = getcwd();
-        $testId = uniqid("acf-pro-installer-test");
-        $tempWorkDir = sys_get_temp_dir() . "/{$testId}";
-        mkdir($tempWorkDir);
-        chdir($tempWorkDir);
-    }
-
-    public static function tearDownAfterClass(): void
-    {
-        chdir(self::$actualWorkingDirectory);
-    }
-
-    protected function tearDown(): void
-    {
-        // Unset the environment variable after every test
-        // See: http://stackoverflow.com/a/34065522
-        putenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME);
-
-        // Delete the .env file
-        $dotenv = getcwd() . DIRECTORY_SEPARATOR . '.env';
-        if (file_exists($dotenv)) {
-            unlink($dotenv);
-        }
-    }
-
     public function testImplementsPluginInterface()
     {
-        $this->assertInstanceOf(
-            'Composer\Plugin\PluginInterface',
-            new ACFProInstallerPlugin()
-        );
+        $this->assertInstanceOf(PluginInterface::class, new ACFProInstallerPlugin());
     }
 
     public function testImplementsEventSubscriberInterface()
     {
-        $this->assertInstanceOf(
-            'Composer\EventDispatcher\EventSubscriberInterface',
-            new ACFProInstallerPlugin()
-        );
+        $this->assertInstanceOf(EventSubscriberInterface::class, new ACFProInstallerPlugin());
     }
 
     public function testSubscribesToPreFileDownloadEvent()
@@ -70,448 +40,74 @@ class ACFProInstallerPluginTest extends TestCase
         );
     }
 
-    public function testOnPreFileDownloadCreatesCustomFilesystemWithOldValues()
+    public function testOnPreFileDownloadWithNonACFUrlDoesNotRewriteUrl()
     {
-        // Make key available in the ENVIRONMENT
-        putenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME . '=KEY');
+        $event = $this->createMock(PreFileDownloadEvent::class);
+        $event->expects($this->never())->method('setRemoteFilesystem');
+        $event->method('getProcessedUrl')->willReturn('https://example.com');
 
-        // Mock a RemoteFilesystem
-        $options = ['options' => 'array'];
-        $tlsDisabled = true;
-
-        $rfs = $this
-            ->getMockBuilder('Composer\Util\RemoteFilesystem')
-            ->disableOriginalConstructor()
-            ->setMethods(['getOptions', 'isTlsDisabled'])
-            ->getMock();
-
-        $rfs
-            ->expects($this->once())
-            ->method('getOptions')
-            ->willReturn($options);
-
-        $rfs
-            ->expects($this->once())
-            ->method('isTlsDisabled')
-            ->willReturn($tlsDisabled);
-
-        // Mock Config
-        $config = $this
-            ->getMockBuilder('Composer\Config')
-            ->getMock();
-
-        // Mock Composer
-        $composer = $this
-            ->getMockBuilder('Composer\Composer')
-            ->setMethods(['getConfig'])
-            ->getMock();
-
-        $composer
-            ->method('getConfig')
-            ->willReturn($config);
-
-        // Mock IOInterface
-        $io = $this
-            ->getMockBuilder('Composer\IO\IOInterface')
-            ->getMock();
-
-        // Mock an Event
-        $event = $this
-            ->getMockBuilder('Composer\Plugin\PreFileDownloadEvent')
-            ->disableOriginalConstructor()
-            ->setMethods(
-                [
-                    'getProcessedUrl',
-                    'getRemoteFilesystem',
-                    'setRemoteFilesystem'
-                ]
-            )
-            ->getMock();
-
-        $event
-            ->expects($this->once())
-            ->method('getProcessedUrl')
-            ->willReturn(self::REPO_URL);
-
-        $event
-            ->expects($this->once())
-            ->method('getRemoteFilesystem')
-            ->willReturn($rfs);
-
-        $event
-            ->expects($this->once())
-            ->method('setRemoteFilesystem')
-            ->with(
-                $this->callback(
-                    function ($rfs) use ($config, $io, $options, $tlsDisabled) {
-                        $this->assertEquals($options, $rfs->getOptions());
-                        $this->assertEquals($tlsDisabled, $rfs->isTlsDisabled());
-                        return true;
-                    }
-                )
-            );
-
-        // Call addKey
-        $plugin = new ACFProInstallerPlugin();
-        $plugin->activate($composer, $io);
-        $plugin->onPreFileDownload($event);
+        $sut = new ACFProInstallerPlugin();
+        $sut->onPreFileDownload($event);
     }
 
-    public function testOnPreFileDownloadFromENV()
+    public function testOnPreFileDownloadWithoutLicenseKeyThrowsException()
     {
-        // The key that should be available in the ENVIRONMENT
-        $key = 'ENV_KEY';
+        $event = $this->createMock(PreFileDownloadEvent::class);
+        $event->method('getProcessedUrl')->willReturn('https://example.com');
 
-        // Make key available in the ENVIRONMENT
-        putenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME . '=' . $key);
+        $downloadMatcher = $this->createMock(DownloadMatcherInterface::class);
+        $downloadMatcher->method('matches')->willReturn(true);
 
-        // Mock a RemoteFilesystem
-        $rfs = $this
-            ->getMockBuilder('Composer\Util\RemoteFilesystem')
-            ->disableOriginalConstructor()
-            ->setMethods(['getOptions', 'isTlsDisabled'])
-            ->getMock();
+        $licenseKeyProvider = $this->createMock(LicenseKeyProviderInterface::class);
+        $licenseKeyProvider->expects($this->once())->method('provide')->willReturn(null);
+        $licenseKeyProviderFactory = $this->createMock(LicenseKeyProviderFactoryInterface::class);
+        $licenseKeyProviderFactory->expects($this->once())->method("build")->willReturn($licenseKeyProvider);
 
-        $rfs
-            ->expects($this->once())
-            ->method('getOptions')
-            ->willReturn([]);
+        $composer = $this->createMock(Composer::class);
+        $composer->method('getConfig')->willReturn(new Config());
+        $io = $this->createMock(IOInterface::class);
 
-        $rfs
-            ->expects($this->once())
-            ->method('isTlsDisabled')
-            ->willReturn(true);
-
-        // Mock Config
-        $config = $this
-            ->getMockBuilder('Composer\Config')
-            ->getMock();
-
-        // Mock Composer
-        $composer = $this
-            ->getMockBuilder('Composer\Composer')
-            ->setMethods(['getConfig'])
-            ->getMock();
-
-        $composer
-            ->method('getConfig')
-            ->willReturn($config);
-
-        // Mock IOInterface
-        $io = $this
-            ->getMockBuilder('Composer\IO\IOInterface')
-            ->getMock();
-
-        // Mock an Event
-        $event = $this
-            ->getMockBuilder('Composer\Plugin\PreFileDownloadEvent')
-            ->disableOriginalConstructor()
-            ->setMethods(
-                [
-                    'getProcessedUrl',
-                    'getRemoteFilesystem',
-                    'setRemoteFilesystem'
-                ]
-            )
-            ->getMock();
-
-        $event
-            ->expects($this->once())
-            ->method('getProcessedUrl')
-            ->willReturn(self::REPO_URL);
-
-        $event
-            ->expects($this->once())
-            ->method('getRemoteFilesystem')
-            ->willReturn($rfs);
-
-        $event
-            ->expects($this->once())
-            ->method('setRemoteFilesystem')
-            ->with(
-                $this->callback(
-                    function ($rfs) use ($key) {
-                        return true;
-                    }
-                )
-            );
-
-        // Call addKey
-        $plugin = new ACFProInstallerPlugin();
-        $plugin->activate($composer, $io);
-        $plugin->onPreFileDownload($event);
+        $sut = new ACFProInstallerPlugin($licenseKeyProviderFactory, null, $downloadMatcher);
+        $sut->activate($composer, $io);
+        $this->expectException(MissingKeyException::class);
+        $sut->onPreFileDownload($event);
     }
 
-    public function testOnPreFileDownloadFromDotEnv()
+    public function testOnPreFileDownloadWithACFUrlDoesSetRemoteFileSystemWithCorrectURlWithLicenseKey()
     {
-        // The key that should be available in the .env file
-        $key = 'DOT_ENV_KEY';
+        $downloadMatcher = $this->createMock(DownloadMatcherInterface::class);
+        $downloadMatcher->method('matches')->willReturn(true);
 
-        // Make key available in the .env file
-        file_put_contents(
-            getcwd() . DIRECTORY_SEPARATOR . '.env',
-            EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME . '=' . $key
-        );
+        $licenseKeyProvider = $this->createMock(LicenseKeyProviderInterface::class);
+        $key = "ecb0254b-61e1-4132-b511-b78ec5057ed6";
+        $url = 'https://example.com/download?v=5.8.7';
+        $licenseKeyProvider->expects($this->once())->method('provide')->willReturn($key);
+        $licenseKeyProviderFactory = $this->createMock(LicenseKeyProviderFactoryInterface::class);
+        $licenseKeyProviderFactory->expects($this->once())->method("build")->willReturn($licenseKeyProvider);
 
-        // Mock a RemoteFilesystem
-        $rfs = $this
-            ->getMockBuilder('Composer\Util\RemoteFilesystem')
-            ->disableOriginalConstructor()
-            ->setMethods(['getOptions', 'isTlsDisabled'])
-            ->getMock();
+        $licenseKeyAppender = $this->createMock(UrlLicenseKeyAppenderInterface::class);
+        $licenseKeyAppender->expects($this->once())->method('append')->withConsecutive([
+            $url,
+            $key
+        ])->willReturn("{$url}&k={$key}");
 
-        $rfs
-            ->expects($this->once())
-            ->method('getOptions')
-            ->willReturn([]);
+        $composer = $this->createMock(Composer::class);
+        $composer->method('getConfig')->willReturn(new Config());
+        $io = $this->createMock(IOInterface::class);
 
-        $rfs
-            ->expects($this->once())
-            ->method('isTlsDisabled')
-            ->willReturn(true);
+        $rfs = $this->createMock(RemoteFilesystem::class);
+        $rfs->expects($this->once())->method('getOptions')->willReturn([]);
+        $rfs->expects($this->once())->method('isTlsDisabled')->willReturn(true);
 
-        // Mock Config
-        $config = $this
-            ->getMockBuilder('Composer\Config')
-            ->getMock();
+        $event = $this->createMock(PreFileDownloadEvent::class);
+        $event->expects($this->once())->method('setRemoteFilesystem');
+        $event->method('getProcessedUrl')->willReturn($url);
+        $event->method('getRemoteFileSystem')->willReturn($rfs);
+        $event->expects($this->once())->method('setRemoteFileSystem')
+            ->with($this->isInstanceOf(RewriteUrlRemoteFilesystem::class));
 
-        // Mock Composer
-        $composer = $this
-            ->getMockBuilder('Composer\Composer')
-            ->setMethods(['getConfig'])
-            ->getMock();
-
-        $composer
-            ->method('getConfig')
-            ->willReturn($config);
-
-        // Mock IOInterface
-        $io = $this
-            ->getMockBuilder('Composer\IO\IOInterface')
-            ->getMock();
-
-        // Mock an Event
-        $event = $this
-            ->getMockBuilder('Composer\Plugin\PreFileDownloadEvent')
-            ->disableOriginalConstructor()
-            ->setMethods(
-                [
-                    'getProcessedUrl',
-                    'getRemoteFilesystem',
-                    'setRemoteFilesystem'
-                ]
-            )
-            ->getMock();
-
-        $event
-            ->expects($this->once())
-            ->method('getProcessedUrl')
-            ->willReturn(self::REPO_URL);
-
-        $event
-            ->expects($this->once())
-            ->method('getRemoteFilesystem')
-            ->willReturn($rfs);
-
-        $event
-            ->expects($this->once())
-            ->method('setRemoteFilesystem')
-            ->with(
-                $this->callback(
-                    function ($rfs) use ($key) {
-                        return true;
-                    }
-                )
-            );
-
-        // Call addKey
-        $plugin = new ACFProInstallerPlugin();
-        $plugin->activate($composer, $io);
-        $plugin->onPreFileDownload($event);
-    }
-
-    public function testPreferKeyFromEnv()
-    {
-        // The key that should be available in the .env file
-        $fileKey = 'DOT_ENV_KEY';
-        $key = 'ENV_KEY';
-
-        // Make key available in the .env file
-        file_put_contents(
-            getcwd() . DIRECTORY_SEPARATOR . '.env',
-            EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME . '=' . $fileKey
-        );
-
-        // Make key available in the ENVIRONMENT
-        putenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME . '=' . $key);
-
-        // Mock a RemoteFilesystem
-        $rfs = $this
-            ->getMockBuilder('Composer\Util\RemoteFilesystem')
-            ->disableOriginalConstructor()
-            ->setMethods(['getOptions', 'isTlsDisabled'])
-            ->getMock();
-
-        $rfs
-            ->expects($this->once())
-            ->method('getOptions')
-            ->willReturn([]);
-
-        $rfs
-            ->expects($this->once())
-            ->method('isTlsDisabled')
-            ->willReturn(true);
-
-        // Mock Config
-        $config = $this
-            ->getMockBuilder('Composer\Config')
-            ->getMock();
-
-        // Mock Composer
-        $composer = $this
-            ->getMockBuilder('Composer\Composer')
-            ->setMethods(['getConfig'])
-            ->getMock();
-
-        $composer
-            ->method('getConfig')
-            ->willReturn($config);
-
-        // Mock IOInterface
-        $io = $this
-            ->getMockBuilder('Composer\IO\IOInterface')
-            ->getMock();
-
-        // Mock an Event
-        $event = $this
-            ->getMockBuilder('Composer\Plugin\PreFileDownloadEvent')
-            ->disableOriginalConstructor()
-            ->setMethods(
-                [
-                    'getProcessedUrl',
-                    'getRemoteFilesystem',
-                    'setRemoteFilesystem'
-                ]
-            )
-            ->getMock();
-
-        $event
-            ->expects($this->once())
-            ->method('getProcessedUrl')
-            ->willReturn(self::REPO_URL);
-
-        $event
-            ->expects($this->once())
-            ->method('getRemoteFilesystem')
-            ->willReturn($rfs);
-
-        $event
-            ->expects($this->once())
-            ->method('setRemoteFilesystem')
-            ->with(
-                $this->callback(
-                    function ($rfs) use ($key) {
-                        return true;
-                    }
-                )
-            );
-
-        // Call addKey
-        $plugin = new ACFProInstallerPlugin();
-        $plugin->activate($composer, $io);
-        $plugin->onPreFileDownload($event);
-    }
-
-    public function testThrowExceptionWhenKeyIsMissing()
-    {
-        // Expect an Exception
-        $this->expectException(
-            MissingKeyException::class,
-            EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME
-        );
-
-        // Mock Composer
-        $composer = $this
-            ->getMockBuilder('Composer\Composer')
-            ->setMethods(['getConfig'])
-            ->getMock();
-
-        $composer
-            ->method('getConfig')
-            ->willReturn(new Config());
-
-        // Mock IOInterface
-        $io = $this
-            ->getMockBuilder('Composer\IO\IOInterface')
-            ->getMock();
-
-        // Mock a RemoteFilesystem
-        $rfs = $this
-            ->getMockBuilder('Composer\Util\RemoteFilesystem')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        // Mock an Event
-        $event = $this
-            ->getMockBuilder('Composer\Plugin\PreFileDownloadEvent')
-            ->disableOriginalConstructor()
-            ->setMethods(
-                [
-                    'getProcessedUrl',
-                    'getRemoteFilesystem'
-                ]
-            )
-            ->getMock();
-
-        $event
-            ->expects($this->once())
-            ->method('getProcessedUrl')
-            ->willReturn(self::REPO_URL);
-
-        $event
-            ->expects($this->once())
-            ->method('getRemoteFilesystem')
-            ->willReturn($rfs);
-
-        // Call addKey
-        $plugin = new ACFProInstallerPlugin();
-        $plugin->activate($composer, $io);
-        $plugin->onPreFileDownload($event);
-    }
-
-    public function testOnlyAddKeyOnAcfUrl()
-    {
-        // Make key available in the ENVIRONMENT
-        putenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME . '=KEY');
-
-        // Mock an Event
-        $event = $this
-            ->getMockBuilder('Composer\Plugin\PreFileDownloadEvent')
-            ->disableOriginalConstructor()
-            ->setMethods(
-                [
-                    'getProcessedUrl',
-                    'getRemoteFilesystem',
-                    'setRemoteFilesystem'
-                ]
-            )
-            ->getMock();
-
-        $event
-            ->expects($this->once())
-            ->method('getProcessedUrl')
-            ->willReturn('another-url');
-
-        $event
-            ->expects($this->never())
-            ->method('getRemoteFilesystem');
-
-        $event
-            ->expects($this->never())
-            ->method('setRemoteFilesystem');
-
-        // Call addKey
-        $plugin = new ACFProInstallerPlugin();
-        $plugin->onPreFileDownload($event);
+        $sut = new ACFProInstallerPlugin($licenseKeyProviderFactory, $licenseKeyAppender, $downloadMatcher);
+        $sut->activate($composer, $io);
+        $sut->onPreFileDownload($event);
     }
 }
