@@ -23,8 +23,6 @@ jobs:
         run: composer run lint
 
       - name: Run Tests
-        env:
-          ACF_PRO_KEY: ${{ secrets.ACF_PRO_KEY }}
         run: |
           mkdir -p build/logs
           composer run test
