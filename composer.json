@@ -39,7 +39,7 @@
   "scripts": {
     "syntax-check": "parallel-lint --no-progress --exclude app --exclude vendor .",
     "lint": "phpcs src tests --standard=PSR2",
-    "test": "phpunit -c phpunit.xml.dist --teamcity /build/logs/teamcity",
+    "test": "phpunit -c phpunit.xml.dist --teamcity",
     "coverage": "phpunit --coverage-html coverage",
     "coverage-check": "coverage-check build/logs/clover.xml 100"
   }
