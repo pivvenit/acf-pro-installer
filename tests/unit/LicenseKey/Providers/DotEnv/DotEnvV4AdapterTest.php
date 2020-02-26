@@ -3,70 +3,76 @@ declare(strict_types=1);
 
 namespace PivvenIT\Composer\Installers\ACFPro\Test\LicenseKey\Providers\DotEnv;
 
-use Composer\Util\Filesystem;
 use PHPUnit\Framework\TestCase;
-use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\DotEnv\DotEnvAdapterFactory;
 use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\DotEnv\DotEnvV4Adapter;
 use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\EnvironmentVariableLicenseKeyProvider;
 
+/**
+ * @runTestsInSeparateProcesses
+ */
 class DotEnvV4AdapterTest extends TestCase
 {
     /**
-     * @var string
+     * @var callable
      */
-    private $testPath;
-    /**
-     * @var Filesystem
-     */
-    private $fs;
-
-    /**
-     * @inheritdoc
-     */
-    protected function setUp(): void
-    {
-        parent::setUp();
-        if (!DotEnvAdapterFactory::isV4()) {
-            $this->markTestSkipped(
-                'This test run is performed using vlucas/phpdotenv ^3.0, skipping testing the ^4.0 tests'
-            );
-            return;
-        }
-        $this->fs = new Filesystem();
-        $this->testPath = sprintf("%s%s%s", sys_get_temp_dir(), DIRECTORY_SEPARATOR, uniqid("acf-pro-installer-test"));
-        $this->fs->ensureDirectoryExists($this->testPath);
-    }
+    private $autoloader;
 
     public function testLoadWithKeyInEnvFileMakesItAvailable()
     {
         $key = "ab83a014-61f5-412b-9084-5c5b056105c0";
-        file_put_contents(
-            sprintf("%s%s.env", $this->testPath, DIRECTORY_SEPARATOR),
-            sprintf("%s=%s", EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME, $key)
-        );
+        $this->autoloader = function ($className) {
+            if ($className == "Dotenv\\Dotenv") {
+                $mock = new class {
+                    public static function createImmutable()
+                    {
+                        return new self;
+                    }
+
+                    public static function safeLoad()
+                    {
+                        // Load the ACF_PRO_KEY with the key specified above
+                        putenv(
+                            sprintf(
+                                "%s=%s",
+                                EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME,
+                                "ab83a014-61f5-412b-9084-5c5b056105c0"
+                            )
+                        );
+                    }
+                };
+                class_alias(get_class($mock), 'Dotenv\\Dotenv');
+            }
+        };
+        spl_autoload_register($this->autoloader, false, true);
         $sut = new DotEnvV4Adapter();
         $this->assertFalse(getenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME));
-        $sut->load($this->testPath);
+        $sut->load(getcwd());
         $this->assertEquals($key, getenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME));
     }
 
     public function testLoadWithoutKeyInEnvFileDoesNotSetKey()
     {
-        file_put_contents(
-            sprintf("%s%s.env", $this->testPath, DIRECTORY_SEPARATOR),
-            ""
-        );
-        $sut = new DotEnvV4Adapter();
-        $this->assertFalse(getenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME));
-        $sut->load($this->testPath);
-        $this->assertFalse(getenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME));
-    }
+        $this->autoloader = function ($className) {
+            if ($className == "Dotenv\\Dotenv") {
+                $mock = new class {
+                    public static function createImmutable()
+                    {
+                        return new self;
+                    }
 
-    public function testLoadWithoutEnvFileDoesNotSetKey()
-    {
+                    public static function safeLoad()
+                    {
+                        // Does not load anything
+                        return;
+                    }
+                };
+                class_alias(get_class($mock), 'Dotenv\\Dotenv');
+            }
+        };
+        spl_autoload_register($this->autoloader, false, true);
         $sut = new DotEnvV4Adapter();
         $this->assertFalse(getenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME));
-        $sut->load($this->testPath);
+        $sut->load(getcwd());
         $this->assertFalse(getenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME));
     }
 
@@ -76,7 +82,9 @@ class DotEnvV4AdapterTest extends TestCase
     protected function tearDown(): void
     {
         parent::tearDown();
-        $this->fs->removeDirectory($this->testPath);
+        if ($this->autoloader != null) {
+            spl_autoload_unregister($this->autoloader);
+        }
         putenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME); //Clears the environment variable
     }
 }
