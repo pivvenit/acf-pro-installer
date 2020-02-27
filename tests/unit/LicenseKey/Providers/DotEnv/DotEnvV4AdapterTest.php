@@ -9,6 +9,7 @@ use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\EnvironmentVariable
 
 /**
  * @runTestsInSeparateProcesses
+ * @preserveGlobalState disabled
  */
 class DotEnvV4AdapterTest extends TestCase
 {
