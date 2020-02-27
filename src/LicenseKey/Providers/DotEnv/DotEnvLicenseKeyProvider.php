@@ -22,7 +22,11 @@ class DotEnvLicenseKeyProvider extends EnvironmentVariableLicenseKeyProvider
      */
     public function provide(): ?string
     {
-        $this->dotEnvAdapter->load(getcwd());
+        $currentWorkingDirectory = getcwd();
+        if ($currentWorkingDirectory === false) {
+            return null;
+        }
+        $this->dotEnvAdapter->load($currentWorkingDirectory);
         return parent::provide();
     }
 }

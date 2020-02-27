@@ -5,6 +5,10 @@ namespace PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\DotEnv;
 
 class DotEnvAdapterFactory
 {
+    /**
+     * @param \Dotenv\Dotenv|null $dotEnv
+     * @return DotEnvAdapterInterface
+     */
     public static function build($dotEnv = null): DotEnvAdapterInterface
     {
         if (self::isV4($dotEnv)) {
@@ -16,6 +20,10 @@ class DotEnvAdapterFactory
         }
     }
 
+    /**
+     * @param \Dotenv\Dotenv|null $dotEnv
+     * @return bool
+     */
     public static function isV4($dotEnv = null): bool
     {
         // Here we deliberately specify the namespace as string,

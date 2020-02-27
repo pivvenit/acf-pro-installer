@@ -25,6 +25,12 @@ jobs:
       - name: Run lint
         run: composer run lint
 
+      - name: Run static analysis
+        run: composer run analyse
+
+      - name: Configure matchers
+        uses: mheap/phpunit-matcher-action@master
+
       - name: Run Tests
         run: |
           mkdir -p build/logs

@@ -82,7 +82,7 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * @param  Composer    $composer The composer object
      * @param  IOInterface $io       Not used
      */
-    public function activate(Composer $composer, IOInterface $io)
+    public function activate(Composer $composer, IOInterface $io) : void
     {
         $this->composer = $composer;
         $this->io = $io;
@@ -95,7 +95,7 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      *               (will not show up in composer.lock)
      *
      * @access public
-     * @return array An array of events that the plugin subscribes to
+     * @return array<string, string> An array of events that the plugin subscribes to
      * @static
      */
     public static function getSubscribedEvents()
@@ -116,7 +116,7 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * @param  PreFileDownloadEvent $event The event that called this method
      * @throws MissingKeyException
      */
-    public function onPreFileDownload(PreFileDownloadEvent $event)
+    public function onPreFileDownload(PreFileDownloadEvent $event) : void
     {
         $packageUrl = $event->getProcessedUrl();
 
