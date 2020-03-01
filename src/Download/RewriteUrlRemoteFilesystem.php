@@ -1,6 +1,7 @@
 <?php
+declare(strict_types=1);
 
-namespace PivvenIT\Composer\Installers\ACFPro;
+namespace PivvenIT\Composer\Installers\ACFPro\Download;
 
 use Composer\Config;
 use Composer\IO\IOInterface;
@@ -17,7 +18,7 @@ class RewriteUrlRemoteFilesystem extends RemoteFilesystem
      * The rewriteUrl that is used instead of the provided Url
      *
      * @access protected
-     * @var string
+     * @var    string
      */
     protected $rewriteUrl;
 
@@ -25,11 +26,11 @@ class RewriteUrlRemoteFilesystem extends RemoteFilesystem
      * Constructor
      *
      * @access public
-     * @param string $rewriteUrl The url that should be used instead of fileurl
-     * @param IOInterface $io The IO instance
-     * @param Config $config The config
-     * @param array $options The options
-     * @param bool $disableTls
+     * @param  string      $rewriteUrl The url that should be used instead of fileurl
+     * @param  IOInterface $io         The IO instance
+     * @param  Config      $config     The config
+     * @param  array       $options    The options
+     * @param  bool        $disableTls
      */
     public function __construct(
         $rewriteUrl,
@@ -48,10 +49,10 @@ class RewriteUrlRemoteFilesystem extends RemoteFilesystem
      * Uses the provided rewriteUrl instead of the provided $fileUrl
      *
      * @param string $originUrl The origin URL
-     * @param string $fileUrl The file URL (ignored)
-     * @param string $fileName the local filename
-     * @param bool $progress Display the progression
-     * @param array $options Additional context options
+     * @param string $fileUrl   The file URL (ignored)
+     * @param string $fileName  the local filename
+     * @param bool   $progress  Display the progression
+     * @param array  $options   Additional context options
      *
      * @return bool true
      */

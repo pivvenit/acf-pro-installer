@@ -26,12 +26,18 @@
     "phpunit/phpunit": "^8.0",
     "squizlabs/php_codesniffer": "^3.4",
     "jakub-onderka/php-parallel-lint": "^1.0",
-    "rregeer/phpunit-coverage-check": "^0.3.1"
+    "rregeer/phpunit-coverage-check": "^0.3.1",
+    "phpstan/phpstan": "^0.12.11",
+    "symfony/process": "^4.0",
+    "symfony/finder": "^4.0"
   },
   "autoload": {
     "psr-4": {
       "PivvenIT\\Composer\\Installers\\ACFPro\\": "src"
     }
+  },
+  "autoload-dev": {
+    "psr-4": { "PivvenIT\\Composer\\Installers\\ACFPro\\Test\\": "tests/unit" }
   },
   "extra": {
     "class": "PivvenIT\\Composer\\Installers\\ACFPro\\ACFProInstallerPlugin"
@@ -39,7 +45,9 @@
   "scripts": {
     "syntax-check": "parallel-lint --no-progress --exclude app --exclude vendor .",
     "lint": "phpcs src tests --standard=PSR2",
-    "test": "phpunit -c phpunit.xml.dist",
+    "test": "phpunit -c phpunit.xml.dist --teamcity --testsuite unit",
+    "integration-test": "phpunit -c phpunit.xml.dist --testsuite integration --verbose --no-coverage",
+    "analyse": "phpstan analyse",
     "coverage": "phpunit --coverage-html coverage",
     "coverage-check": "coverage-check build/logs/clover.xml 100"
   }

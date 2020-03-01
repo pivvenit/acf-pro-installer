@@ -1,0 +1,42 @@
+on: [pull_request]
+
+name: Build Pull Request
+
+jobs:
+  build-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Fetch the entire git repository
+        run: |
+          git fetch --unshallow
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Check for syntax-errors
+        run: composer run syntax-check
+
+      - name: Run lint
+        run: composer run lint
+
+      - name: Run static analysis
+        run: composer run analyse
+
+      - name: Configure matchers
+        uses: mheap/phpunit-matcher-action@master
+
+      - name: Run Tests
+        run: |
+          mkdir -p build/logs
+          composer run test
+
+      - name: Check code coverage
+        run: composer run coverage-check
+
+      - name: Run Integration tests
+        run: composer run integration-test
+
+

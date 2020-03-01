@@ -1,0 +1,15 @@
+parameters:
+    level: max
+    reportUnmatchedIgnoredErrors: false
+    paths:
+        - src
+    ignoreErrors:
+        -
+            message: "#has parameter \\$options with no value type specified in iterable type array.#"
+            path: src/Download/RewriteUrlRemoteFilesystem.php
+        -
+            message: "#Dotenv\\\\Dotenv\\:\\:create#"
+            path: src/LicenseKey/Providers/DotEnv/DotEnvV3Adapter.php
+        -
+            message: "#Dotenv\\\\Dotenv\\:\\:create#"
+            path: src/LicenseKey/Providers/DotEnv/DotEnvV4Adapter.php

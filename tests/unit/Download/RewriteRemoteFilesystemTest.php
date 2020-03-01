@@ -1,10 +1,11 @@
 <?php
 
-namespace PivvenIT\Composer\Installers\ACFPro\Test;
+namespace PivvenIT\Composer\Installers\ACFPro\Test\Download;
 
+use Composer\IO\IOInterface;
 use Composer\Util\RemoteFilesystem;
 use PHPUnit\Framework\TestCase;
-use PivvenIT\Composer\Installers\ACFPro\RewriteUrlRemoteFilesystem;
+use PivvenIT\Composer\Installers\ACFPro\Download\RewriteUrlRemoteFilesystem;
 
 class RewriteRemoteFilesystemTest extends TestCase
 {
@@ -13,7 +14,7 @@ class RewriteRemoteFilesystemTest extends TestCase
 
     protected function setUp() : void
     {
-        $this->io = $this->createMock('Composer\IO\IOInterface');
+        $this->io = $this->createMock(IOInterface::class);
     }
 
     public function testExtendsComposerRemoteFilesystem()

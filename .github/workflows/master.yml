@@ -1,9 +1,12 @@
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
 
-name: Build
+name: Master Build
 
 jobs:
-  build-and-test:
+  master-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -22,9 +25,13 @@ jobs:
       - name: Run lint
         run: composer run lint
 
+      - name: Run static analysis
+        run: composer run analyse
+
+      - name: Configure matchers
+        uses: mheap/phpunit-matcher-action@master
+
       - name: Run Tests
-        env:
-          ACF_PRO_KEY: ${{ secrets.ACF_PRO_KEY }}
         run: |
           mkdir -p build/logs
           composer run test
@@ -37,4 +44,8 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: build/logs/clover.xml
           fail_ci_if_error: true
+
+      - name: Run Integration tests
+        run: composer run integration-test
+
 
