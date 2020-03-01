@@ -46,7 +46,7 @@ library:
 
 There are 3 ways to make the ACF_PRO_KEY available:
 - Using the ACF_PRO_KEY environment variable
-- .Env file
+- `.env` file
 - Setting `acf-pro-key` in `$COMPOSER_HOME/config.json`
 
 Select the one that best matches your setup:
