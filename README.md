@@ -1,6 +1,6 @@
 # ACF PRO Installer
 
-[![Packagist](https://img.shields.io/packagist/v/pivvenit/acf-pro-installer.svg?maxAge=3600)](https://packagist.org/packages/pivvenit/acf-pro-installer)[![Packagist](https://img.shields.io/packagist/l/pivvenit/acf-pro-installer.svg?maxAge=2592000)](https://github.com/pivvenit/acf-pro-installer/blob/master/LICENSE)![](https://github.com/pivvenit/acf-pro-installer/workflows/Master Build/badge.svg)
+[![Packagist](https://img.shields.io/packagist/v/pivvenit/acf-pro-installer.svg?maxAge=3600)](https://packagist.org/packages/pivvenit/acf-pro-installer)[![Packagist](https://img.shields.io/packagist/l/pivvenit/acf-pro-installer.svg?maxAge=2592000)](https://github.com/pivvenit/acf-pro-installer/blob/master/LICENSE)![](https://github.com/pivvenit/acf-pro-installer/workflows/Master%20Build/badge.svg)
 [![Dependabot](https://badgen.net/badge/Dependabot/enabled/green?icon=dependabot)](https://dependabot.com/)
 [![Coverage Status](https://coveralls.io/repos/github/pivvenit/acf-pro-installer/badge.svg?branch=master)](https://coveralls.io/github/pivvenit/acf-pro-installer?branch=master)
 
@@ -65,6 +65,7 @@ ACF_PRO_KEY=Your-Key-Here
 ```
 
 ***2.c. Setting the key in `$COMPOSER_HOME/config.json`***
+
 You specify the `acf-pro-key` in the `config` section of your `$COMPOSER_HOME/config.json`
 ```json
 {
@@ -73,10 +74,10 @@ You specify the `acf-pro-key` in the `config` section of your `$COMPOSER_HOME/co
   }
 }
 ```
-> $COMPOSER_HOME is a hidden, global (per-user on the machine) directory that is shared between all projects.
-> By default it points to C:\Users\<user>\AppData\Roaming\Composer on Windows and /Users/\<user\>/.composer on macOS. 
-> On *nix systems that follow the XDG Base Directory Specifications, it points to $XDG_CONFIG_HOME/composer. 
-> On other *nix systems, it points to /home/\<user\>/.composer.
+> `$COMPOSER_HOME` is a hidden, global (per-user on the machine) directory that is shared between all projects.
+> By default it points to `C:\Users\<user>\AppData\Roaming\Composer` on Windows and `/Users/\<user\>/.composer` on macOS. 
+> On *nix systems that follow the XDG Base Directory Specifications, it points to `$XDG_CONFIG_HOME/composer`. 
+> On other *nix systems, it points to `/home/\<user\>/.composer`.
 
 **3. Require ACF PRO**
 
