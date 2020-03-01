@@ -37,7 +37,6 @@ jobs:
         run: composer run coverage-check
 
       - name: Run Integration tests
-        run: |
-          cd tests/integration && docker-compose up --force-recreate --exit-code-from=composer
+        run: composer run integration-test
 
 

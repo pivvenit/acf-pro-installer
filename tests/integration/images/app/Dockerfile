@@ -2,12 +2,11 @@ FROM composer@sha256:260b64250820be8c5c7e731a5e83a311bf8c3a2c1f067c88c1213775e62
 
 FROM php:7.4-alpine@sha256:862f99ef809039aae5450d93a58faead3b23a83b75e0f013b18c36990bbf80bf
 RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
-COPY tests/integration/test.crt /usr/local/share/ca-certificates/test.crt
+COPY test.crt /usr/local/share/ca-certificates/test.crt
 RUN update-ca-certificates
 COPY --from=composer /usr/bin/composer /usr/bin/composer
-COPY tests/integration/packages.json /registry/packages.json
+COPY packages.json /registry/packages.json
 WORKDIR /plugin
-COPY . .
+COPY release /plugin
 WORKDIR /app
-COPY tests/integration/composer.json composer.json
 CMD composer install --no-dev --no-scripts --no-progress --no-suggest

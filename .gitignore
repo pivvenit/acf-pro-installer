@@ -5,6 +5,11 @@ vendor
 coverage
 build/logs/clover.xml
 
+# Integration files
+tests/integration/images/app/release
+tests/integration/scenarios/composer.bedrock.json
+
 .idea
 .phpunit.result.cache
 .env
+
