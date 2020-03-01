@@ -36,19 +36,48 @@ class IntegrationTest extends TestCase
         }
 
         // Build the app image
-        $process = new Process(["docker", "build", "-t", "acf-pro-installer/testapp:latest", "."], __DIR__ . "/images/app");
+        $process = new Process(
+            [
+                "docker",
+                "build",
+                "-t",
+                "acf-pro-installer/testapp:latest",
+                "."
+            ],
+            __DIR__ . "/images/app"
+        );
         $process->mustRun();
 
         // Build the registry image
-        $process = new Process(["docker", "build", "-t", "acf-pro-installer/registry:latest", "."], __DIR__ . "/images/registry");
+        $process = new Process(
+            [
+                "docker",
+                "build",
+                "-t",
+                "acf-pro-installer/registry:latest",
+                "."
+            ],
+            __DIR__ . "/images/registry"
+        );
         $process->mustRun();
 
         $process = new Process(["docker", "network", "create", "--driver", "bridge", "acf-pro-installer-test"]);
         $process->mustRun();
 
         // start registry image
-        $process = new Process(["docker", "run", "-d", "--network=acf-pro-installer-test", "--network-alias=connect.advancedcustomfields.com", "--name", "acf-pro-installer-registry", "--rm",
-            "acf-pro-installer/registry:latest"]);
+        $process = new Process(
+            [
+                "docker",
+                "run",
+                "-d",
+                "--network=acf-pro-installer-test",
+                "--network-alias=connect.advancedcustomfields.com",
+                "--name",
+                "acf-pro-installer-registry",
+                "--rm",
+                "acf-pro-installer/registry:latest"
+            ]
+        );
         $process->mustRun();
     }
 
@@ -87,9 +116,21 @@ class IntegrationTest extends TestCase
     public function testWithSpecificVersionInstallWorksCorrectly()
     {
         $localComposerPath = __DIR__ . "/scenarios/composer.specific-version.json";
-        $process = new Process(["docker", "run", "--rm", "-i", "--network=acf-pro-installer-test", "-e", "ACF_PRO_KEY=test", "-v", "{$localComposerPath}:/app/composer.json",
-            "acf-pro-installer/testapp:latest"],
-            __DIR__);
+        $process = new Process(
+            [
+                "docker",
+                "run",
+                "--rm",
+                "-i",
+                "--network=acf-pro-installer-test",
+                "-e",
+                "ACF_PRO_KEY=test",
+                "-v",
+                "{$localComposerPath}:/app/composer.json",
+                "acf-pro-installer/testapp:latest"
+            ],
+            __DIR__
+        );
         $process->setTimeout(60);
         $process->mustRun(function ($type, $buffer) {
             echo $buffer;
@@ -100,9 +141,21 @@ class IntegrationTest extends TestCase
     public function testWithDevMasterInstallWorksCorrectly()
     {
         $localComposerPath = __DIR__ . "/scenarios/composer.dev-master.json";
-        $process = new Process(["docker", "run", "--rm", "-i", "--network=acf-pro-installer-test", "-e", "ACF_PRO_KEY=test", "-v", "{$localComposerPath}:/app/composer.json",
-            "acf-pro-installer/testapp:latest"],
-            __DIR__);
+        $process = new Process(
+            [
+                "docker",
+                "run",
+                "--rm",
+                "-i",
+                "--network=acf-pro-installer-test",
+                "-e",
+                "ACF_PRO_KEY=test",
+                "-v",
+                "{$localComposerPath}:/app/composer.json",
+                "acf-pro-installer/testapp:latest"
+            ],
+            __DIR__
+        );
         $process->setTimeout(60);
         $process->mustRun(function ($type, $buffer) {
             echo $buffer;
@@ -113,9 +166,21 @@ class IntegrationTest extends TestCase
     public function testWithDevMasterAndDotEnvV3InstallWorksCorrectly()
     {
         $localComposerPath = __DIR__ . "/scenarios/composer.dotenv3.json";
-        $process = new Process(["docker", "run", "--rm", "-i", "--network=acf-pro-installer-test", "-e", "ACF_PRO_KEY=test", "-v", "{$localComposerPath}:/app/composer.json",
-            "acf-pro-installer/testapp:latest"],
-            __DIR__);
+        $process = new Process(
+            [
+                "docker",
+                "run",
+                "--rm",
+                "-i",
+                "--network=acf-pro-installer-test",
+                "-e",
+                "ACF_PRO_KEY=test",
+                "-v",
+                "{$localComposerPath}:/app/composer.json",
+                "acf-pro-installer/testapp:latest"
+            ],
+            __DIR__
+        );
         $process->setTimeout(60);
         $process->mustRun(function ($type, $buffer) {
             echo $buffer;
@@ -142,13 +207,25 @@ class IntegrationTest extends TestCase
             ]
         );
         $composerData->require->{"pivvenit/acf-pro-installer"} = "dev-master";
-        $composerData->require->{ "advanced-custom-fields/advanced-custom-fields-pro"} = "dev-master";
+        $composerData->require->{"advanced-custom-fields/advanced-custom-fields-pro"} = "dev-master";
         file_put_contents($composerJsonPath, json_encode($composerData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
         $localComposerPath = __DIR__ . "/scenarios/composer.bedrock.json";
-        $process = new Process(["docker", "run", "--rm", "-i", "--network=acf-pro-installer-test", "-e", "ACF_PRO_KEY=test", "-v", "{$localComposerPath}:/app/composer.json",
-            "acf-pro-installer/testapp:latest"],
-            __DIR__);
+        $process = new Process(
+            [
+                "docker",
+                "run",
+                "--rm",
+                "-i",
+                "--network=acf-pro-installer-test",
+                "-e",
+                "ACF_PRO_KEY=test",
+                "-v",
+                "{$localComposerPath}:/app/composer.json",
+                "acf-pro-installer/testapp:latest"
+            ],
+            __DIR__
+        );
         $process->setTimeout(60);
         $process->mustRun(function ($type, $buffer) {
             echo $buffer;
