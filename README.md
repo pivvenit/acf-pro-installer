@@ -44,7 +44,18 @@ library:
 
 **2. Make your ACF PRO key available**
 
+There are 3 ways to make the ACF_PRO_KEY available:
+- Using the ACF_PRO_KEY environment variable
+- .Env file
+- Setting `acf-pro-key` in `$COMPOSER_HOME/config.json`
+
+Select the one that best matches your setup:
+
+***2.a Using the ACF_PRO_KEY Environment variable***
+
 Set the environment variable **`ACF_PRO_KEY`** to your [ACF PRO key][acf-account].
+
+***2.b Use a .env file***
 
 Alternatively you can add an entry to your **`.env`** file:
 
@@ -52,6 +63,20 @@ Alternatively you can add an entry to your **`.env`** file:
 # .env (same directory as composer.json)
 ACF_PRO_KEY=Your-Key-Here
 ```
+
+***2.c. Setting the key in `$COMPOSER_HOME/config.json`***
+You specify the `acf-pro-key` in the `config` section of your `$COMPOSER_HOME/config.json`
+```json
+{
+  "config": {
+    "acf-pro-key": "Your-Key-Here"
+  }
+}
+```
+> $COMPOSER_HOME is a hidden, global (per-user on the machine) directory that is shared between all projects.
+> By default it points to C:\Users\<user>\AppData\Roaming\Composer on Windows and /Users/\<user\>/.composer on macOS. 
+> On *nix systems that follow the XDG Base Directory Specifications, it points to $XDG_CONFIG_HOME/composer. 
+> On other *nix systems, it points to /home/\<user\>/.composer.
 
 **3. Require ACF PRO**
 

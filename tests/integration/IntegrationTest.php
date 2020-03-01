@@ -188,6 +188,35 @@ class IntegrationTest extends TestCase
         $this->assertEquals(0, $process->getExitCode());
     }
 
+    public function testWithComposerConfigKeyWorksCorrectly()
+    {
+        $localComposerPath = __DIR__ . "/scenarios/composer.dev-master.json";
+        $makeConfigDirCommand = 'mkdir ~/.composer';
+        $configCommand = 'echo "{ \\"config\\": { \\"acf-pro-key\\": \\"test\\"}}" >> ~/.composer/config.json';
+        $installCommand =  "composer install --no-dev --no-scripts --no-progress --no-suggest";
+        $process = new Process(
+            [
+                "docker",
+                "run",
+                "--rm",
+                "-i",
+                "--network=acf-pro-installer-test",
+                "-v",
+                "{$localComposerPath}:/app/composer.json",
+                "acf-pro-installer/testapp:latest",
+                "/bin/sh",
+                "-c",
+                "{$makeConfigDirCommand};{$configCommand};{$installCommand}"
+            ],
+            __DIR__
+        );
+        $process->setTimeout(60);
+        $process->mustRun(function ($type, $buffer) {
+            echo $buffer;
+        });
+        $this->assertEquals(0, $process->getExitCode());
+    }
+
     public function testWithBedrockInstallWorksCorrectly()
     {
         // Download latest bedrock composer file and modify it to contain the required repository
