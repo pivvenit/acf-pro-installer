@@ -21,6 +21,7 @@ class DownloadMatcher implements DownloadMatcherInterface
      */
     public function matches(string $url): bool
     {
-        return strpos($url, self::ACF_PRO_LEGACY_PACKAGE_URL) !== false || strpos($url, self::ACF_PRO_PACKAGE_URL) !== false;
+        return strpos($url, self::ACF_PRO_LEGACY_PACKAGE_URL) !== false ||
+            strpos($url, self::ACF_PRO_PACKAGE_URL) !== false;
     }
 }
