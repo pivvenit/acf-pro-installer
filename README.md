@@ -26,17 +26,17 @@ You no longer have to update the version manually as you had to with `philippbas
 ```json
 {
   "type": "composer",
-  "url": "https://pivvenit.github.io/acf-composer-bridge/composer/v3/"
+  "url": "https://pivvenit.github.io/acf-composer-bridge/composer/v3/wordpress-plugin/"
 }
 ```
 
-This installs the package as `wpackagist-plugin` type, in case you want a different type, use the following URL:
+This installs the package as `wordpress-plugin` type, in case you want a different type, use the following URL:
 
 wordpress-muplugin:
 > `https://pivvenit.github.io/acf-composer-bridge/composer/v3/wordpress-muplugin/`
 
-wordpress-plugin:
-> `https://pivvenit.github.io/acf-composer-bridge/composer/v3/wordpress-plugin/`
+wpackagist-plugin:
+> `https://pivvenit.github.io/acf-composer-bridge/composer/v3/wpackagist-plugin/`
 
 library:
 > `https://pivvenit.github.io/acf-composer-bridge/composer/v3/library/`
