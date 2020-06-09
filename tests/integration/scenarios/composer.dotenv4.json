@@ -1,0 +1,37 @@
+{
+  "name": "test/acf-pro-installer-test",
+  "description": "A Test project for ACF Pro Installer",
+  "license": "MIT",
+  "repositories": [
+    {
+      "type": "path",
+      "url": "/plugin",
+      "version": "dev-master"
+    },
+    {
+      "type": "composer",
+      "url": "file:///registry/packages.json"
+    }
+  ],
+  "authors": [
+    {
+      "name": "PivvenIT",
+      "homepage": "https://pivvenit.nl"
+    }
+  ],
+  "keywords": [
+    "test"
+  ],
+  "require": {
+    "vlucas/phpdotenv": "^4.0",
+    "advanced-custom-fields/advanced-custom-fields-pro": "dev-master",
+    "pivvenit/acf-pro-installer": "dev-master"
+  },
+  "config": {
+    "options": {
+      "ssl": {
+        "verify_peer": false
+      }
+    }
+  }
+}
