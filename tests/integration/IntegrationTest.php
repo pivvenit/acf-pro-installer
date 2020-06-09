@@ -188,6 +188,31 @@ class IntegrationTest extends TestCase
         $this->assertEquals(0, $process->getExitCode());
     }
 
+    public function testWithDevMasterAndDotEnvV4InstallWorksCorrectly()
+    {
+        $localComposerPath = __DIR__ . "/scenarios/composer.dotenv4.json";
+        $process = new Process(
+            [
+                "docker",
+                "run",
+                "--rm",
+                "-i",
+                "--network=acf-pro-installer-test",
+                "-e",
+                "ACF_PRO_KEY=test",
+                "-v",
+                "{$localComposerPath}:/app/composer.json",
+                "acf-pro-installer/testapp:latest"
+            ],
+            __DIR__
+        );
+        $process->setTimeout(60);
+        $process->mustRun(function ($type, $buffer) {
+            echo $buffer;
+        });
+        $this->assertEquals(0, $process->getExitCode());
+    }
+
     public function testWithComposerConfigKeyWorksCorrectly()
     {
         $localComposerPath = __DIR__ . "/scenarios/composer.dev-master.json";
