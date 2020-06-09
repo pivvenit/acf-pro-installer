@@ -1,6 +1,6 @@
 {
   "name": "pivvenit/acf-pro-installer",
-  "description": "An install helper for Advanced Custom Fields PRO",
+  "description": "A modern maintained install helper for Advanced Custom Fields PRO",
   "type": "composer-plugin",
   "license": "MIT",
   "authors": [
