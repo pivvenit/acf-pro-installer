@@ -28,7 +28,7 @@
     "jakub-onderka/php-parallel-lint": "^1.0",
     "rregeer/phpunit-coverage-check": "^0.3.1",
     "phpstan/phpstan": "^0.12.14",
-    "symfony/process": "^4.0"
+    "symfony/process": "^5.1"
   },
   "autoload": {
     "psr-4": {
