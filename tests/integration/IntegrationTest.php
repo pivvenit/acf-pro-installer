@@ -242,6 +242,34 @@ class IntegrationTest extends TestCase
         $this->assertEquals(0, $process->getExitCode());
     }
 
+    public function testWithDotEnvV5EnvFileWorksCorrectly()
+    {
+        $localComposerPath = __DIR__ . "/scenarios/composer.dotenv5.json";
+        $localDotEnvFilePath = __DIR__."/scenarios/dotenv5.env";
+        $process = new Process(
+            [
+                "docker",
+                "run",
+                "--rm",
+                "-i",
+                "--network=acf-pro-installer-test",
+                "-e",
+                "ACF_PRO_KEY=test",
+                "-v",
+                "{$localComposerPath}:/app/composer.json",
+                "-v",
+                "{$localDotEnvFilePath}:/app/.env",
+                "acf-pro-installer/testapp:latest"
+            ],
+            __DIR__
+        );
+        $process->setTimeout(60);
+        $process->mustRun(function ($type, $buffer) {
+            echo $buffer;
+        });
+        $this->assertEquals(0, $process->getExitCode());
+    }
+
     public function testWithBedrockInstallWorksCorrectly()
     {
         // Download latest bedrock composer file and modify it to contain the required repository
