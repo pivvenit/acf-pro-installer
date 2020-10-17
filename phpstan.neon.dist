@@ -13,3 +13,9 @@ parameters:
         -
             message: "#Dotenv\\\\Dotenv\\:\\:create#"
             path: src/LicenseKey/Providers/DotEnv/DotEnvV4Adapter.php
+        -
+            message: "#Call to an undefined method Composer\\\\Plugin\\\\PreFileDownloadEvent::getRemoteFilesystem#"
+            path: src/ACFProInstallerPlugin.php
+        -
+            message: "#Call to an undefined method Composer\\\\Plugin\\\\PreFileDownloadEvent::setRemoteFilesystem#"
+            path: src/ACFProInstallerPlugin.php

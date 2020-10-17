@@ -162,7 +162,7 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
     /**
      * @inheritDoc
      */
-    public function deactivate(Composer $composer, IOInterface $io)
+    public function deactivate(Composer $composer, IOInterface $io) : void
     {
         // https://github.com/composer/composer/blob/master/UPGRADE-2.0.md#for-integrators-and-plugin-authors
         // Plugins implementing EventSubscriberInterface
@@ -172,7 +172,7 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
     /**
      * @inheritDoc
      */
-    public function uninstall(Composer $composer, IOInterface $io)
+    public function uninstall(Composer $composer, IOInterface $io) : void
     {
         // Nothing to uninstall
     }
@@ -215,7 +215,7 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * @param PreFileDownloadEvent $event
      * @param string $packageUrl
      */
-    private function rewriteFileUrl(PreFileDownloadEvent $event, string $packageUrl)
+    private function rewriteFileUrl(PreFileDownloadEvent $event, string $packageUrl) : void
     {
         $event->setProcessedUrl($this->getDownloadUrl($packageUrl));
     }

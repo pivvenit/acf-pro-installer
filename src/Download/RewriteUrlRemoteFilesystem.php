@@ -28,16 +28,16 @@ class RewriteUrlRemoteFilesystem extends RemoteFilesystem
      * Constructor
      *
      * @access public
-     * @param  string      $rewriteUrl The url that should be used instead of fileurl
-     * @param  IOInterface $io         The IO instance
-     * @param  Config      $config     The config
-     * @param  array       $options    The options
-     * @param  bool        $disableTls
+     * @param string $rewriteUrl The url that should be used instead of fileurl
+     * @param IOInterface $io The IO instance
+     * @param Config $config The config
+     * @param array $options The options
+     * @param bool $disableTls
      */
     public function __construct(
         $rewriteUrl,
         IOInterface $io,
-        Config $config = null,
+        Config $config,
         array $options = [],
         $disableTls = false
     ) {
