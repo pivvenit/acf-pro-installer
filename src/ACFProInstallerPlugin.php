@@ -129,7 +129,6 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
         } else {
             $this->rewriteFileUrl($event, $packageUrl);
         }
-
     }
 
     /**
