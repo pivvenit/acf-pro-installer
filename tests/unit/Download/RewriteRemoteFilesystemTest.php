@@ -3,6 +3,7 @@
 namespace PivvenIT\Composer\Installers\ACFPro\Test\Download;
 
 use Composer\IO\IOInterface;
+use Composer\Plugin\PluginInterface;
 use Composer\Util\RemoteFilesystem;
 use PHPUnit\Framework\TestCase;
 use PivvenIT\Composer\Installers\ACFPro\Download\RewriteUrlRemoteFilesystem;
@@ -14,6 +15,9 @@ class RewriteRemoteFilesystemTest extends TestCase
 
     protected function setUp() : void
     {
+        if (version_compare(PluginInterface::PLUGIN_API_VERSION, '2.0', '>=')) {
+            $this->markTestSkipped("This test tests the legacy integration with Composer API V1");
+        }
         $this->io = $this->createMock(IOInterface::class);
     }
 

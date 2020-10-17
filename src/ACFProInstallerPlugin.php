@@ -59,8 +59,8 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * ACFProInstallerPlugin constructor.
      *
      * @param LicenseKeyProviderFactoryInterface|null $licenseKeyProviderFactory
-     * @param UrlLicenseKeyAppenderInterface|null     $urlLicenseKeyAppender
-     * @param DownloadMatcherInterface|null           $downloadMatcher
+     * @param UrlLicenseKeyAppenderInterface|null $urlLicenseKeyAppender
+     * @param DownloadMatcherInterface|null $downloadMatcher
      */
     public function __construct(
         LicenseKeyProviderFactoryInterface $licenseKeyProviderFactory = null,
@@ -79,10 +79,10 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * in the addKey method.
      *
      * @access public
-     * @param  Composer    $composer The composer object
-     * @param  IOInterface $io       Not used
+     * @param Composer $composer The composer object
+     * @param IOInterface $io Not used
      */
-    public function activate(Composer $composer, IOInterface $io) : void
+    public function activate(Composer $composer, IOInterface $io): void
     {
         $this->composer = $composer;
         $this->io = $io;
@@ -113,30 +113,27 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * swap out the ACF PRO url with a url that contains the key.
      *
      * @access public
-     * @param  PreFileDownloadEvent $event The event that called this method
+     * @param PreFileDownloadEvent $event The event that called this method
      * @throws MissingKeyException
      */
-    public function onPreFileDownload(PreFileDownloadEvent $event) : void
+    public function onPreFileDownload(PreFileDownloadEvent $event): void
     {
         $packageUrl = $event->getProcessedUrl();
 
         if (!$this->downloadMatcher->matches($packageUrl)) {
             return;
         }
-        $remoteFilesystem = $event->getRemoteFilesystem();
-        $event->setRemoteFilesystem(
-            new RewriteUrlRemoteFilesystem(
-                $this->getDownloadUrl($packageUrl),
-                $this->io,
-                $this->composer->getConfig(),
-                $remoteFilesystem->getOptions(),
-                $remoteFilesystem->isTlsDisabled()
-            )
-        );
+
+        if ($this->isComposerV1()) {
+            $this->legacyRewriteFileUrl($event, $packageUrl);
+        } else {
+            $this->rewriteFileUrl($event, $packageUrl);
+        }
+
     }
 
     /**
-     * @param  string $packageUrl
+     * @param string $packageUrl
      * @return string
      * @throws MissingKeyException
      */
@@ -161,5 +158,66 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
             throw new MissingKeyException("No valid license key could be found");
         }
         return $key;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function deactivate(Composer $composer, IOInterface $io)
+    {
+        // https://github.com/composer/composer/blob/master/UPGRADE-2.0.md#for-integrators-and-plugin-authors
+        // Plugins implementing EventSubscriberInterface
+        // will be deregistered from the EventDispatcher automatically when being deactivated, nothing to do there.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function uninstall(Composer $composer, IOInterface $io)
+    {
+        // Nothing to uninstall
+    }
+
+    /**
+     * Checks whether this plugin runs in a Composer API version 1 environment or not
+     *
+     * @return bool
+     */
+    private function isComposerV1(): bool
+    {
+        return version_compare(PluginInterface::PLUGIN_API_VERSION, '2.0', '<');
+    }
+
+    /**
+     * Used for Composer V1 environments
+     *
+     * @param PreFileDownloadEvent $event
+     * @param string $packageUrl
+     * @throws MissingKeyException
+     */
+    private function legacyRewriteFileUrl(PreFileDownloadEvent $event, string $packageUrl): void
+    {
+        $remoteFilesystem = $event->getRemoteFilesystem();
+        $event->setRemoteFilesystem(
+            new RewriteUrlRemoteFilesystem(
+                $this->getDownloadUrl($packageUrl),
+                $this->io,
+                $this->composer->getConfig(),
+                $remoteFilesystem->getOptions(),
+                $remoteFilesystem->isTlsDisabled()
+            )
+        );
+    }
+
+
+    /**
+     * Rewrites the File URL for V2 environments
+     *
+     * @param PreFileDownloadEvent $event
+     * @param string $packageUrl
+     */
+    private function rewriteFileUrl(PreFileDownloadEvent $event, string $packageUrl)
+    {
+        $event->setProcessedUrl($this->getDownloadUrl($packageUrl));
     }
 }

@@ -42,6 +42,9 @@ class ACFProInstallerPluginTest extends TestCase
 
     public function testOnPreFileDownloadWithNonACFUrlDoesNotRewriteUrl()
     {
+        if (version_compare(PluginInterface::PLUGIN_API_VERSION, '2.0', '>=')) {
+            $this->markTestSkipped("This test tests the legacy integration with Composer API V1");
+        }
         $event = $this->createMock(PreFileDownloadEvent::class);
         $event->expects($this->never())->method('setRemoteFilesystem');
         $event->method('getProcessedUrl')->willReturn('https://example.com');
@@ -75,6 +78,9 @@ class ACFProInstallerPluginTest extends TestCase
 
     public function testOnPreFileDownloadWithACFUrlDoesSetRemoteFileSystemWithCorrectURlWithLicenseKey()
     {
+        if (version_compare(PluginInterface::PLUGIN_API_VERSION, '2.0', '>=')) {
+            $this->markTestSkipped("This test tests the legacy integration with Composer API V1");
+        }
         $downloadMatcher = $this->createMock(DownloadMatcherInterface::class);
         $downloadMatcher->method('matches')->willReturn(true);
 

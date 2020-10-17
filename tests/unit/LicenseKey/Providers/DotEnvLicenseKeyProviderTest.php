@@ -20,6 +20,13 @@ class DotEnvLicenseKeyProviderTest extends TestCase
         putenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME);
     }
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // Clear the environment variable if the system has one set.
+        putenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME);
+    }
+
     public function testProvideCallsLoadOnDotEnvAdapter()
     {
         $dotEnvProvider = $this->createMock(DotEnvAdapterInterface::class);

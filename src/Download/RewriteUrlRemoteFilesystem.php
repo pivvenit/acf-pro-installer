@@ -11,6 +11,8 @@ use Composer\Util\RemoteFilesystem;
  * A composer remote filesystem for ACF PRO
  *
  * Makes it possible to copy files from a modified file url
+ *
+ * @deprecated This class is used to provide backwards compatible support for V1 Composer environments
  */
 class RewriteUrlRemoteFilesystem extends RemoteFilesystem
 {
