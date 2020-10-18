@@ -10,7 +10,8 @@ use Composer\Plugin\PluginInterface;
 use Composer\Plugin\PreFileDownloadEvent;
 use PivvenIT\Composer\Installers\ACFPro\Download\DownloadMatcher;
 use PivvenIT\Composer\Installers\ACFPro\Download\DownloadMatcherInterface;
-use PivvenIT\Composer\Installers\ACFPro\Download\RewriteUrlRemoteFilesystem;
+use PivvenIT\Composer\Installers\ACFPro\Download\Interceptor\BackwardsCompatibleDownloadInterceptorFactory;
+use PivvenIT\Composer\Installers\ACFPro\Download\Interceptor\DownloadInterceptorFactoryInterface;
 use PivvenIT\Composer\Installers\ACFPro\Exceptions\MissingKeyException;
 use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Appenders\UrlLicenseKeyAppender;
 use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Appenders\UrlLicenseKeyAppenderInterface;
@@ -54,6 +55,10 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * @var DownloadMatcherInterface
      */
     private $downloadMatcher;
+    /**
+     * @var DownloadInterceptorFactoryInterface
+     */
+    private $downloadInterceptorFactory;
 
     /**
      * ACFProInstallerPlugin constructor.
@@ -61,15 +66,19 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * @param LicenseKeyProviderFactoryInterface|null $licenseKeyProviderFactory
      * @param UrlLicenseKeyAppenderInterface|null $urlLicenseKeyAppender
      * @param DownloadMatcherInterface|null $downloadMatcher
+     * @param DownloadInterceptorFactoryInterface|null $downloadInterceptorFactory
      */
     public function __construct(
         LicenseKeyProviderFactoryInterface $licenseKeyProviderFactory = null,
         UrlLicenseKeyAppenderInterface $urlLicenseKeyAppender = null,
-        DownloadMatcherInterface $downloadMatcher = null
+        DownloadMatcherInterface $downloadMatcher = null,
+        DownloadInterceptorFactoryInterface $downloadInterceptorFactory = null
     ) {
         $this->licenseKeyProviderFactory = $licenseKeyProviderFactory ?? new DefaultLicenseKeyProviderFactory();
         $this->urlLicenseKeyAppender = $urlLicenseKeyAppender ?? new UrlLicenseKeyAppender();
         $this->downloadMatcher = $downloadMatcher ?? new DownloadMatcher();
+        $this->downloadInterceptorFactory = $downloadInterceptorFactory ??
+            new BackwardsCompatibleDownloadInterceptorFactory();
     }
 
     /**
@@ -109,8 +118,8 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * Checks if the download is an ACF package, if so it appends the license key to the URL
      *
      * The key is not added to the package because it would show up in the
-     * composer.lock file in this case. A custom file system is used to
-     * swap out the ACF PRO url with a url that contains the key.
+     * composer.lock file in this case.
+     * The interceptor swaps out the ACF PRO url with a url that contains the key.
      *
      * @access public
      * @param PreFileDownloadEvent $event The event that called this method
@@ -123,24 +132,16 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
         if (!$this->downloadMatcher->matches($packageUrl)) {
             return;
         }
-
-        if ($this->isComposerV1()) {
-            $this->legacyRewriteFileUrl($event, $packageUrl);
-        } else {
-            $this->rewriteFileUrl($event, $packageUrl);
-        }
+        $downloadInterceptor = $this->downloadInterceptorFactory->build(
+            PluginInterface::PLUGIN_API_VERSION,
+            $this->composer,
+            $this->io
+        );
+        $downloadInterceptor->intercept(
+            $event,
+            $this->urlLicenseKeyAppender->append($packageUrl, $this->getLicenseKey())
+        );
     }
-
-    /**
-     * @param string $packageUrl
-     * @return string
-     * @throws MissingKeyException
-     */
-    private function getDownloadUrl(string $packageUrl): string
-    {
-        return $this->urlLicenseKeyAppender->append($packageUrl, $this->getLicenseKey());
-    }
-
 
     /**
      * Get the ACF PRO license key
@@ -162,7 +163,7 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
     /**
      * @inheritDoc
      */
-    public function deactivate(Composer $composer, IOInterface $io) : void
+    public function deactivate(Composer $composer, IOInterface $io): void
     {
         // https://github.com/composer/composer/blob/master/UPGRADE-2.0.md#for-integrators-and-plugin-authors
         // Plugins implementing EventSubscriberInterface
@@ -172,51 +173,8 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
     /**
      * @inheritDoc
      */
-    public function uninstall(Composer $composer, IOInterface $io) : void
+    public function uninstall(Composer $composer, IOInterface $io): void
     {
         // Nothing to uninstall
-    }
-
-    /**
-     * Checks whether this plugin runs in a Composer API version 1 environment or not
-     *
-     * @return bool
-     */
-    private function isComposerV1(): bool
-    {
-        return version_compare(PluginInterface::PLUGIN_API_VERSION, '2.0', '<');
-    }
-
-    /**
-     * Used for Composer V1 environments
-     *
-     * @param PreFileDownloadEvent $event
-     * @param string $packageUrl
-     * @throws MissingKeyException
-     */
-    private function legacyRewriteFileUrl(PreFileDownloadEvent $event, string $packageUrl): void
-    {
-        $remoteFilesystem = $event->getRemoteFilesystem();
-        $event->setRemoteFilesystem(
-            new RewriteUrlRemoteFilesystem(
-                $this->getDownloadUrl($packageUrl),
-                $this->io,
-                $this->composer->getConfig(),
-                $remoteFilesystem->getOptions(),
-                $remoteFilesystem->isTlsDisabled()
-            )
-        );
-    }
-
-
-    /**
-     * Rewrites the File URL for V2 environments
-     *
-     * @param PreFileDownloadEvent $event
-     * @param string $packageUrl
-     */
-    private function rewriteFileUrl(PreFileDownloadEvent $event, string $packageUrl) : void
-    {
-        $event->setProcessedUrl($this->getDownloadUrl($packageUrl));
     }
 }

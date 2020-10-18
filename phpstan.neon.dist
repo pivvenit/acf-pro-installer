@@ -15,7 +15,10 @@ parameters:
             path: src/LicenseKey/Providers/DotEnv/DotEnvV4Adapter.php
         -
             message: "#Call to an undefined method Composer\\\\Plugin\\\\PreFileDownloadEvent::getRemoteFilesystem#"
-            path: src/ACFProInstallerPlugin.php
+            path: src/Download/Interceptor/ComposerV1DownloadInterceptor.php
         -
             message: "#Call to an undefined method Composer\\\\Plugin\\\\PreFileDownloadEvent::setRemoteFilesystem#"
-            path: src/ACFProInstallerPlugin.php
+            path: src/Download/Interceptor/ComposerV1DownloadInterceptor.php
+        -
+            message: "# with no value type specified in iterable type array#"
+            path: src/Download/Interceptor/RewriteUrlRemoteFilesystem.php
