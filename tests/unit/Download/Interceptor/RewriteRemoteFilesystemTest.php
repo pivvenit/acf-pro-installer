@@ -1,12 +1,12 @@
 <?php
 
-namespace PivvenIT\Composer\Installers\ACFPro\Test\Download;
+namespace PivvenIT\Composer\Installers\ACFPro\Test\Download\Interceptor;
 
 use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Util\RemoteFilesystem;
 use PHPUnit\Framework\TestCase;
-use PivvenIT\Composer\Installers\ACFPro\Download\RewriteUrlRemoteFilesystem;
+use PivvenIT\Composer\Installers\ACFPro\Download\Interceptor\RewriteUrlRemoteFilesystem;
 
 class RewriteRemoteFilesystemTest extends TestCase
 {
