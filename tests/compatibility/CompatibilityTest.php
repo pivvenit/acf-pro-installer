@@ -51,9 +51,9 @@ class CompatibilityTest extends TestCase
         ) as $item
         ) {
             if ($item->isDir()) {
-                @mkdir($releaseDir . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+                @mkdir($releaseDir . DIRECTORY_SEPARATOR . $iterator->getSubPathName(), 0777, true);
             } else {
-                copy($item, $releaseDir . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+                copy($item->getPathName(), $releaseDir . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
             }
         }
 
@@ -65,7 +65,7 @@ class CompatibilityTest extends TestCase
             if ($item->isDir()) {
                 @mkdir($testDir . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
             } else {
-                copy($item, $testDir . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+                copy($item->getPathName(), $testDir . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
             }
         }
 

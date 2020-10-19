@@ -7,6 +7,7 @@ build/logs/clover.xml
 
 # Integration files
 tests/integration/images/app/release
+tests/compatibility/images/release
 tests/integration/scenarios/composer.bedrock.json
 
 .idea
