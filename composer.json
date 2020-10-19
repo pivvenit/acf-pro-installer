@@ -50,7 +50,7 @@
     "integration-test": "phpunit -c phpunit.xml.dist --testsuite integration --verbose --no-coverage",
     "compatibility-test": "phpunit -c phpunit.xml.dist --testsuite compatibility --verbose --no-coverage",
     "analyse": "phpstan analyse",
-    "coverage": "phpunit -c phpunit.xml.dist --teamcity --testsuite unit --coverage-html coverage",
+    "coverage": "phpunit -c phpunit.xml.dist --testsuite unit --coverage-html coverage",
     "coverage-check": "coverage-check build/logs/clover.xml 100"
   }
 }

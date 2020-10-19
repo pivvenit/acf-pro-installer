@@ -42,6 +42,28 @@ class ACFProInstallerPluginTest extends TestCase
         );
     }
 
+    public function testDeactivateDoesNothing()
+    {
+        $sut = new ACFProInstallerPlugin();
+        $composer = $this->createMock(Composer::class);
+        $io = $this->createMock(IOInterface::class);
+        $sut->activate($composer, $io);
+        $composer->expects($this->never())->method($this->anything());
+        $io->expects($this->never())->method($this->anything());
+        $sut->deactivate($composer, $io);
+    }
+
+    public function testUninstallDoesNothing()
+    {
+        $sut = new ACFProInstallerPlugin();
+        $composer = $this->createMock(Composer::class);
+        $io = $this->createMock(IOInterface::class);
+        $sut->activate($composer, $io);
+        $composer->expects($this->never())->method($this->anything());
+        $io->expects($this->never())->method($this->anything());
+        $sut->uninstall($composer, $io);
+    }
+
     public function testOnPreFileDownloadWithNonACFUrlDoesNotCreateInterceptor()
     {
         $event = $this->createMock(PreFileDownloadEvent::class);
