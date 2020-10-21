@@ -239,7 +239,7 @@ class IntegrationTest extends TestCase
                 "ACF_PRO_KEY=test",
                 "-v",
                 "{$localComposerPath}:/app/composer.json",
-                "acf-pro-installer/testapp:latest"
+                "acf-pro-installer/testapp:{$phpVersion}-{$composerVersion}"
             ],
             __DIR__
         );
