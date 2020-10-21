@@ -9,6 +9,24 @@ use Symfony\Component\Process\Process;
 
 class IntegrationTest extends TestCase
 {
+    public static $phpVersions = [
+        "7.4" => "7.4-alpine@sha256:253e5534cff41e167895a1f749cbc557ea673e48429589cc9df2e896fe99958e"
+    ];
+
+    public static $composerVersions = [
+        "1.10" => "1.10@sha256:5821c81e84f77906e6ae8c9a2d016d4d635669ca595b12e949fcea518d6ed415",
+        "2.0" => "2.0@sha256:3a93c5674bce0938ba2166f23b27e54378da552bd19986e4ad80aabc73a467e6",
+    ];
+
+    public function getTestMatrix()
+    {
+        foreach (array_keys(self::$phpVersions) as $phpVersion) {
+            foreach (array_keys(self::$composerVersions) as $composerVersion) {
+                yield "PHP {$phpVersion}, Composer {$composerVersion}" => [$phpVersion, $composerVersion];
+            }
+        }
+    }
+
     public static function setUpBeforeClass(): void
     {
         // Only run these tests if docker is available
@@ -35,18 +53,7 @@ class IntegrationTest extends TestCase
             }
         }
 
-        // Build the app image
-        $process = new Process(
-            [
-                "docker",
-                "build",
-                "-t",
-                "acf-pro-installer/testapp:latest",
-                "."
-            ],
-            __DIR__ . "/images/app"
-        );
-        $process->mustRun();
+
 
         // Build the registry image
         $process = new Process(
@@ -63,6 +70,24 @@ class IntegrationTest extends TestCase
 
         $process = new Process(["docker", "network", "create", "--driver", "bridge", "acf-pro-installer-test"]);
         $process->mustRun();
+
+        foreach (self::$phpVersions as $shortPhpVersion => $fullPhpVersion) {
+            foreach (self::$composerVersions as $shortComposerVersion => $fullComposerVersion) {
+                // Build the app image
+                $process = new Process(
+                    [
+                        "docker",
+                        "build",
+                        "-t",
+                        "acf-pro-installer/testapp:{$shortPhpVersion}-{$shortComposerVersion}",
+                        "."
+                    ],
+                    __DIR__ . "/images/app"
+                );
+                $process->mustRun();
+            }
+        }
+
 
         // start registry image
         $process = new Process(
@@ -113,7 +138,10 @@ class IntegrationTest extends TestCase
         return __DIR__ . "/images/app/release/src";
     }
 
-    public function testWithSpecificVersionInstallWorksCorrectly()
+    /**
+     * @dataProvider getTestMatrix
+     */
+    public function testWithSpecificVersionInstallWorksCorrectly($phpVersion, $composerVersion)
     {
         $localComposerPath = __DIR__ . "/scenarios/composer.specific-version.json";
         $process = new Process(
@@ -127,7 +155,7 @@ class IntegrationTest extends TestCase
                 "ACF_PRO_KEY=test",
                 "-v",
                 "{$localComposerPath}:/app/composer.json",
-                "acf-pro-installer/testapp:latest"
+                "acf-pro-installer/testapp:{$phpVersion}-{$composerVersion}"
             ],
             __DIR__
         );
@@ -138,7 +166,10 @@ class IntegrationTest extends TestCase
         $this->assertEquals(0, $process->getExitCode());
     }
 
-    public function testWithDevMasterInstallWorksCorrectly()
+    /**
+     * @dataProvider getTestMatrix
+     */
+    public function testWithDevMasterInstallWorksCorrectly($phpVersion, $composerVersion)
     {
         $localComposerPath = __DIR__ . "/scenarios/composer.dev-master.json";
         $process = new Process(
@@ -152,7 +183,7 @@ class IntegrationTest extends TestCase
                 "ACF_PRO_KEY=test",
                 "-v",
                 "{$localComposerPath}:/app/composer.json",
-                "acf-pro-installer/testapp:latest"
+                "acf-pro-installer/testapp:{$phpVersion}-{$composerVersion}"
             ],
             __DIR__
         );
@@ -163,7 +194,10 @@ class IntegrationTest extends TestCase
         $this->assertEquals(0, $process->getExitCode());
     }
 
-    public function testWithDevMasterAndDotEnvV3InstallWorksCorrectly()
+    /**
+     * @dataProvider getTestMatrix
+     */
+    public function testWithDevMasterAndDotEnvV3InstallWorksCorrectly($phpVersion, $composerVersion)
     {
         $localComposerPath = __DIR__ . "/scenarios/composer.dotenv3.json";
         $process = new Process(
@@ -177,7 +211,7 @@ class IntegrationTest extends TestCase
                 "ACF_PRO_KEY=test",
                 "-v",
                 "{$localComposerPath}:/app/composer.json",
-                "acf-pro-installer/testapp:latest"
+                "acf-pro-installer/testapp:{$phpVersion}-{$composerVersion}"
             ],
             __DIR__
         );
@@ -188,7 +222,10 @@ class IntegrationTest extends TestCase
         $this->assertEquals(0, $process->getExitCode());
     }
 
-    public function testWithDevMasterAndDotEnvV4InstallWorksCorrectly()
+    /**
+     * @dataProvider getTestMatrix
+     */
+    public function testWithDevMasterAndDotEnvV4InstallWorksCorrectly($phpVersion, $composerVersion)
     {
         $localComposerPath = __DIR__ . "/scenarios/composer.dotenv4.json";
         $process = new Process(
@@ -213,7 +250,10 @@ class IntegrationTest extends TestCase
         $this->assertEquals(0, $process->getExitCode());
     }
 
-    public function testWithComposerConfigKeyWorksCorrectly()
+    /**
+     * @dataProvider getTestMatrix
+     */
+    public function testWithComposerConfigKeyWorksCorrectly($phpVersion, $composerVersion)
     {
         $localComposerPath = __DIR__ . "/scenarios/composer.dev-master.json";
         $makeConfigDirCommand = 'mkdir ~/.composer';
@@ -228,7 +268,7 @@ class IntegrationTest extends TestCase
                 "--network=acf-pro-installer-test",
                 "-v",
                 "{$localComposerPath}:/app/composer.json",
-                "acf-pro-installer/testapp:latest",
+                "acf-pro-installer/testapp:{$phpVersion}-{$composerVersion}",
                 "/bin/sh",
                 "-c",
                 "{$makeConfigDirCommand};{$configCommand};{$installCommand}"
@@ -242,7 +282,10 @@ class IntegrationTest extends TestCase
         $this->assertEquals(0, $process->getExitCode());
     }
 
-    public function testWithDotEnvV5EnvFileWorksCorrectly()
+    /**
+     * @dataProvider getTestMatrix
+     */
+    public function testWithDotEnvV5EnvFileWorksCorrectly($phpVersion, $composerVersion)
     {
         $localComposerPath = __DIR__ . "/scenarios/composer.dotenv5.json";
         $localDotEnvFilePath = __DIR__."/scenarios/dotenv5.env";
@@ -259,7 +302,7 @@ class IntegrationTest extends TestCase
                 "{$localComposerPath}:/app/composer.json",
                 "-v",
                 "{$localDotEnvFilePath}:/app/.env",
-                "acf-pro-installer/testapp:latest"
+                "acf-pro-installer/testapp:{$phpVersion}-{$composerVersion}"
             ],
             __DIR__
         );
@@ -270,7 +313,10 @@ class IntegrationTest extends TestCase
         $this->assertEquals(0, $process->getExitCode());
     }
 
-    public function testWithBedrockInstallWorksCorrectly()
+    /**
+     * @dataProvider getTestMatrix
+     */
+    public function testWithBedrockInstallWorksCorrectly($phpVersion, $composerVersion)
     {
         // Download latest bedrock composer file and modify it to contain the required repository
         $composerJsonPath = __DIR__ . "/scenarios/composer.bedrock.json";
@@ -304,7 +350,7 @@ class IntegrationTest extends TestCase
                 "ACF_PRO_KEY=test",
                 "-v",
                 "{$localComposerPath}:/app/composer.json",
-                "acf-pro-installer/testapp:latest"
+                "acf-pro-installer/testapp:{$phpVersion}-{$composerVersion}"
             ],
             __DIR__
         );

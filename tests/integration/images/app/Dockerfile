@@ -1,6 +1,8 @@
-FROM composer@sha256:260b64250820be8c5c7e731a5e83a311bf8c3a2c1f067c88c1213775e6257666 as composer
+ARG COMPOSER_VERSION=2@sha256:3a93c5674bce0938ba2166f23b27e54378da552bd19986e4ad80aabc73a467e6
+ARG PHP_VERSION=7.4-alpine@sha256:862f99ef809039aae5450d93a58faead3b23a83b75e0f013b18c36990bbf80bf
+FROM composer:${COMPOSER_VERSION} as composer
 
-FROM php:7.4-alpine@sha256:862f99ef809039aae5450d93a58faead3b23a83b75e0f013b18c36990bbf80bf
+FROM php:${PHP_VERSION} as php
 RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 COPY test.crt /usr/local/share/ca-certificates/test.crt
 RUN update-ca-certificates

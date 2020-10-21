@@ -36,8 +36,5 @@ jobs:
       - name: Check code coverage
         run: composer run coverage-check
 
-      - name: Run Compatibility tests
-        run: composer run compatibility-test
-
       - name: Run Integration tests
         run: composer run integration-test

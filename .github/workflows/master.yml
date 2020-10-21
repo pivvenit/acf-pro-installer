@@ -45,9 +45,6 @@ jobs:
           file: build/logs/clover.xml
           fail_ci_if_error: true
 
-      - name: Run Compatibility tests
-        run: composer run compatibility-test
-
       - name: Run Integration tests
         run: composer run integration-test
 
