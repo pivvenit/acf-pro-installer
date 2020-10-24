@@ -54,7 +54,6 @@ class IntegrationTest extends TestCase
         }
 
 
-
         // Build the registry image
         $process = new Process(
             [
@@ -78,6 +77,10 @@ class IntegrationTest extends TestCase
                     [
                         "docker",
                         "build",
+                        "--build-arg",
+                        "PHP_VERSION={$fullPhpVersion}",
+                        "--build-arg",
+                        "COMPOSER_VERSION={$fullComposerVersion}",
                         "-t",
                         "acf-pro-installer/testapp:{$shortPhpVersion}-{$shortComposerVersion}",
                         "."
@@ -87,29 +90,10 @@ class IntegrationTest extends TestCase
                 $process->mustRun();
             }
         }
-
-
-        // start registry image
-        $process = new Process(
-            [
-                "docker",
-                "run",
-                "-d",
-                "--network=acf-pro-installer-test",
-                "--network-alias=connect.advancedcustomfields.com",
-                "--name",
-                "acf-pro-installer-registry",
-                "--rm",
-                "acf-pro-installer/registry:latest"
-            ]
-        );
-        $process->mustRun();
     }
 
     public static function tearDownAfterClass(): void
     {
-        $process = new Process(["docker", "rm", "-f", "acf-pro-installer-registry"]);
-        $process->mustRun();
         $process = new Process(["docker", "network", "rm", "acf-pro-installer-test"]);
         $process->mustRun();
 
@@ -128,6 +112,40 @@ class IntegrationTest extends TestCase
         }
         unlink($releaseDir . "/../composer.json");
         rmdir($releaseDir);
+    }
+
+    public function setUp(): void
+    {
+        parent::setUp();
+        // start registry image
+        $registry = new Process(
+            [
+                "docker",
+                "run",
+                "-d",
+                "-i",
+                "--network=acf-pro-installer-test",
+                "--network-alias=connect.advancedcustomfields.com",
+                "--name",
+                "acf-pro-installer-registry",
+                "--rm",
+                "acf-pro-installer/registry:latest"
+            ]
+        );
+        $registry->mustRun(function ($type, $buffer) {
+            echo $buffer;
+        });
+    }
+
+    public function tearDown(): void
+    {
+        parent::tearDown();
+        $registry = new Process(["docker", "logs", "acf-pro-installer-registry"]);
+        $registry->mustRun(function ($type, $buffer) {
+            echo $buffer;
+        });
+        $process = new Process(["docker", "rm", "-f", "acf-pro-installer-registry"]);
+        $process->mustRun();
     }
 
     /**
@@ -152,7 +170,7 @@ class IntegrationTest extends TestCase
                 "-i",
                 "--network=acf-pro-installer-test",
                 "-e",
-                "ACF_PRO_KEY=test",
+                "ACF_PRO_KEY=938C927AFC694954A84476CF3CBD28B3",
                 "-v",
                 "{$localComposerPath}:/app/composer.json",
                 "acf-pro-installer/testapp:{$phpVersion}-{$composerVersion}"
@@ -180,7 +198,7 @@ class IntegrationTest extends TestCase
                 "-i",
                 "--network=acf-pro-installer-test",
                 "-e",
-                "ACF_PRO_KEY=test",
+                "ACF_PRO_KEY=938C927AFC694954A84476CF3CBD28B3",
                 "-v",
                 "{$localComposerPath}:/app/composer.json",
                 "acf-pro-installer/testapp:{$phpVersion}-{$composerVersion}"
@@ -208,7 +226,7 @@ class IntegrationTest extends TestCase
                 "-i",
                 "--network=acf-pro-installer-test",
                 "-e",
-                "ACF_PRO_KEY=test",
+                "ACF_PRO_KEY=938C927AFC694954A84476CF3CBD28B3",
                 "-v",
                 "{$localComposerPath}:/app/composer.json",
                 "acf-pro-installer/testapp:{$phpVersion}-{$composerVersion}"
@@ -236,7 +254,7 @@ class IntegrationTest extends TestCase
                 "-i",
                 "--network=acf-pro-installer-test",
                 "-e",
-                "ACF_PRO_KEY=test",
+                "ACF_PRO_KEY=938C927AFC694954A84476CF3CBD28B3",
                 "-v",
                 "{$localComposerPath}:/app/composer.json",
                 "acf-pro-installer/testapp:{$phpVersion}-{$composerVersion}"
@@ -258,7 +276,7 @@ class IntegrationTest extends TestCase
         $localComposerPath = __DIR__ . "/scenarios/composer.dev-master.json";
         $makeConfigDirCommand = 'mkdir ~/.composer';
         $configCommand = 'echo "{ \\"config\\": { \\"acf-pro-key\\": \\"test\\"}}" >> ~/.composer/config.json';
-        $installCommand =  "composer install --no-dev --no-scripts --no-progress --no-suggest";
+        $installCommand = "composer install --no-dev --no-scripts --no-progress --no-suggest";
         $process = new Process(
             [
                 "docker",
@@ -288,7 +306,7 @@ class IntegrationTest extends TestCase
     public function testWithDotEnvV5EnvFileWorksCorrectly($phpVersion, $composerVersion)
     {
         $localComposerPath = __DIR__ . "/scenarios/composer.dotenv5.json";
-        $localDotEnvFilePath = __DIR__."/scenarios/dotenv5.env";
+        $localDotEnvFilePath = __DIR__ . "/scenarios/dotenv5.env";
         $process = new Process(
             [
                 "docker",
@@ -297,7 +315,7 @@ class IntegrationTest extends TestCase
                 "-i",
                 "--network=acf-pro-installer-test",
                 "-e",
-                "ACF_PRO_KEY=test",
+                "ACF_PRO_KEY=938C927AFC694954A84476CF3CBD28B3",
                 "-v",
                 "{$localComposerPath}:/app/composer.json",
                 "-v",
@@ -347,7 +365,7 @@ class IntegrationTest extends TestCase
                 "-i",
                 "--network=acf-pro-installer-test",
                 "-e",
-                "ACF_PRO_KEY=test",
+                "ACF_PRO_KEY=938C927AFC694954A84476CF3CBD28B3",
                 "-v",
                 "{$localComposerPath}:/app/composer.json",
                 "acf-pro-installer/testapp:{$phpVersion}-{$composerVersion}"
