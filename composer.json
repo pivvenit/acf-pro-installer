@@ -39,7 +39,8 @@
     "psr-4": { "PivvenIT\\Composer\\Installers\\ACFPro\\Test\\": "tests/unit" }
   },
   "extra": {
-    "class": "PivvenIT\\Composer\\Installers\\ACFPro\\ACFProInstallerPlugin"
+    "class": "PivvenIT\\Composer\\Installers\\ACFPro\\ACFProInstallerPlugin",
+    "plugin-modifies-downloads": true
   },
   "scripts": {
     "syntax-check": "parallel-lint --no-progress --exclude app --exclude vendor .",

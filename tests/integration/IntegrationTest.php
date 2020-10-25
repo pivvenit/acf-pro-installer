@@ -15,7 +15,7 @@ class IntegrationTest extends TestCase
 
     public static $composerVersions = [
         "1.10" => "1.10@sha256:5821c81e84f77906e6ae8c9a2d016d4d635669ca595b12e949fcea518d6ed415",
-        "2.0" => "2.0@sha256:3a93c5674bce0938ba2166f23b27e54378da552bd19986e4ad80aabc73a467e6",
+        "2.0" => "2.0@sha256:aec14858305c64f735fd214b01bb0dc4327545d94bac6d7d4f28d3c486945b0a",
     ];
 
     public function getTestMatrix()
@@ -275,7 +275,7 @@ class IntegrationTest extends TestCase
     {
         $localComposerPath = __DIR__ . "/scenarios/composer.dev-master.json";
         $makeConfigDirCommand = 'mkdir ~/.composer';
-        $configCommand = 'echo "{ \\"config\\": { \\"acf-pro-key\\": \\"test\\"}}" >> ~/.composer/config.json';
+        $configCommand = 'echo "{ \\"config\\": { \\"acf-pro-key\\": \\"938C927AFC694954A84476CF3CBD28B3\\"}}" >> ~/.composer/config.json';
         $installCommand = "composer install --no-dev --no-scripts --no-progress --no-suggest";
         $process = new Process(
             [
