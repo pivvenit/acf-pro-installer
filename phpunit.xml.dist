@@ -7,9 +7,6 @@
     <testsuite name="integration">
       <directory>tests/integration</directory>
     </testsuite>
-    <testsuite name="compatibility">
-      <directory>tests/compatibility</directory>
-    </testsuite>
   </testsuites>
 
   <filter>
