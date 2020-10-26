@@ -17,12 +17,12 @@
   ],
   "require": {
     "php": "^7.2",
-    "composer-plugin-api": "^1.1",
+    "composer-plugin-api": "^1.1||^2.0",
     "vlucas/phpdotenv": "^3.0 || ^4.0 || ^5.0",
     "ext-json": "*"
   },
   "require-dev": {
-    "composer/composer": "^1.0",
+    "composer/composer": "^1.0|| 2.0.0-RC2",
     "phpunit/phpunit": "^8.0",
     "squizlabs/php_codesniffer": "^3.4",
     "php-parallel-lint/php-parallel-lint": "^1.2.0",
@@ -39,15 +39,18 @@
     "psr-4": { "PivvenIT\\Composer\\Installers\\ACFPro\\Test\\": "tests/unit" }
   },
   "extra": {
-    "class": "PivvenIT\\Composer\\Installers\\ACFPro\\ACFProInstallerPlugin"
+    "class": "PivvenIT\\Composer\\Installers\\ACFPro\\ACFProInstallerPlugin",
+    "plugin-modifies-downloads": true
   },
   "scripts": {
     "syntax-check": "parallel-lint --no-progress --exclude app --exclude vendor .",
     "lint": "phpcs src tests --standard=PSR2",
-    "test": "phpunit -c phpunit.xml.dist --teamcity --testsuite unit",
+    "fix": "phpcbf src tests --standard=PSR2",
+    "test": "phpunit -c phpunit.xml.dist --testsuite unit",
+    "test-ci": "phpunit -c phpunit.xml.dist --teamcity --testsuite unit",
     "integration-test": "phpunit -c phpunit.xml.dist --testsuite integration --verbose --no-coverage",
     "analyse": "phpstan analyse",
-    "coverage": "phpunit -c phpunit.xml.dist --teamcity --testsuite unit --coverage-html coverage",
+    "coverage": "phpunit -c phpunit.xml.dist --testsuite unit --coverage-html coverage",
     "coverage-check": "coverage-check build/logs/clover.xml 100"
   }
 }

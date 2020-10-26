@@ -10,7 +10,8 @@ use Composer\Plugin\PluginInterface;
 use Composer\Plugin\PreFileDownloadEvent;
 use PivvenIT\Composer\Installers\ACFPro\Download\DownloadMatcher;
 use PivvenIT\Composer\Installers\ACFPro\Download\DownloadMatcherInterface;
-use PivvenIT\Composer\Installers\ACFPro\Download\RewriteUrlRemoteFilesystem;
+use PivvenIT\Composer\Installers\ACFPro\Download\Interceptor\BackwardsCompatibleDownloadInterceptorFactory;
+use PivvenIT\Composer\Installers\ACFPro\Download\Interceptor\DownloadInterceptorFactoryInterface;
 use PivvenIT\Composer\Installers\ACFPro\Exceptions\MissingKeyException;
 use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Appenders\UrlLicenseKeyAppender;
 use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Appenders\UrlLicenseKeyAppenderInterface;
@@ -54,22 +55,30 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * @var DownloadMatcherInterface
      */
     private $downloadMatcher;
+    /**
+     * @var DownloadInterceptorFactoryInterface
+     */
+    private $downloadInterceptorFactory;
 
     /**
      * ACFProInstallerPlugin constructor.
      *
      * @param LicenseKeyProviderFactoryInterface|null $licenseKeyProviderFactory
-     * @param UrlLicenseKeyAppenderInterface|null     $urlLicenseKeyAppender
-     * @param DownloadMatcherInterface|null           $downloadMatcher
+     * @param UrlLicenseKeyAppenderInterface|null $urlLicenseKeyAppender
+     * @param DownloadMatcherInterface|null $downloadMatcher
+     * @param DownloadInterceptorFactoryInterface|null $downloadInterceptorFactory
      */
     public function __construct(
         LicenseKeyProviderFactoryInterface $licenseKeyProviderFactory = null,
         UrlLicenseKeyAppenderInterface $urlLicenseKeyAppender = null,
-        DownloadMatcherInterface $downloadMatcher = null
+        DownloadMatcherInterface $downloadMatcher = null,
+        DownloadInterceptorFactoryInterface $downloadInterceptorFactory = null
     ) {
         $this->licenseKeyProviderFactory = $licenseKeyProviderFactory ?? new DefaultLicenseKeyProviderFactory();
         $this->urlLicenseKeyAppender = $urlLicenseKeyAppender ?? new UrlLicenseKeyAppender();
         $this->downloadMatcher = $downloadMatcher ?? new DownloadMatcher();
+        $this->downloadInterceptorFactory = $downloadInterceptorFactory ??
+            new BackwardsCompatibleDownloadInterceptorFactory();
     }
 
     /**
@@ -79,10 +88,10 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * in the addKey method.
      *
      * @access public
-     * @param  Composer    $composer The composer object
-     * @param  IOInterface $io       Not used
+     * @param Composer $composer The composer object
+     * @param IOInterface $io Not used
      */
-    public function activate(Composer $composer, IOInterface $io) : void
+    public function activate(Composer $composer, IOInterface $io): void
     {
         $this->composer = $composer;
         $this->io = $io;
@@ -109,42 +118,30 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
      * Checks if the download is an ACF package, if so it appends the license key to the URL
      *
      * The key is not added to the package because it would show up in the
-     * composer.lock file in this case. A custom file system is used to
-     * swap out the ACF PRO url with a url that contains the key.
+     * composer.lock file in this case.
+     * The interceptor swaps out the ACF PRO url with a url that contains the key.
      *
      * @access public
-     * @param  PreFileDownloadEvent $event The event that called this method
+     * @param PreFileDownloadEvent $event The event that called this method
      * @throws MissingKeyException
      */
-    public function onPreFileDownload(PreFileDownloadEvent $event) : void
+    public function onPreFileDownload(PreFileDownloadEvent $event): void
     {
         $packageUrl = $event->getProcessedUrl();
 
         if (!$this->downloadMatcher->matches($packageUrl)) {
             return;
         }
-        $remoteFilesystem = $event->getRemoteFilesystem();
-        $event->setRemoteFilesystem(
-            new RewriteUrlRemoteFilesystem(
-                $this->getDownloadUrl($packageUrl),
-                $this->io,
-                $this->composer->getConfig(),
-                $remoteFilesystem->getOptions(),
-                $remoteFilesystem->isTlsDisabled()
-            )
+        $downloadInterceptor = $this->downloadInterceptorFactory->build(
+            PluginInterface::PLUGIN_API_VERSION,
+            $this->composer,
+            $this->io
+        );
+        $downloadInterceptor->intercept(
+            $event,
+            $this->urlLicenseKeyAppender->append($packageUrl, $this->getLicenseKey())
         );
     }
-
-    /**
-     * @param  string $packageUrl
-     * @return string
-     * @throws MissingKeyException
-     */
-    private function getDownloadUrl(string $packageUrl): string
-    {
-        return $this->urlLicenseKeyAppender->append($packageUrl, $this->getLicenseKey());
-    }
-
 
     /**
      * Get the ACF PRO license key
@@ -161,5 +158,23 @@ class ACFProInstallerPlugin implements PluginInterface, EventSubscriberInterface
             throw new MissingKeyException("No valid license key could be found");
         }
         return $key;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function deactivate(Composer $composer, IOInterface $io): void
+    {
+        // https://github.com/composer/composer/blob/master/UPGRADE-2.0.md#for-integrators-and-plugin-authors
+        // Plugins implementing EventSubscriberInterface
+        // will be deregistered from the EventDispatcher automatically when being deactivated, nothing to do there.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function uninstall(Composer $composer, IOInterface $io): void
+    {
+        // Nothing to uninstall
     }
 }

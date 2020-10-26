@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PivvenIT\Composer\Installers\ACFPro\Download;
+namespace PivvenIT\Composer\Installers\ACFPro\Download\Interceptor;
 
 use Composer\Config;
 use Composer\IO\IOInterface;
@@ -11,6 +11,8 @@ use Composer\Util\RemoteFilesystem;
  * A composer remote filesystem for ACF PRO
  *
  * Makes it possible to copy files from a modified file url
+ *
+ * @deprecated This class is used to provide backwards compatible support for V1 Composer environments
  */
 class RewriteUrlRemoteFilesystem extends RemoteFilesystem
 {
@@ -26,16 +28,16 @@ class RewriteUrlRemoteFilesystem extends RemoteFilesystem
      * Constructor
      *
      * @access public
-     * @param  string      $rewriteUrl The url that should be used instead of fileurl
-     * @param  IOInterface $io         The IO instance
-     * @param  Config      $config     The config
-     * @param  array       $options    The options
-     * @param  bool        $disableTls
+     * @param string $rewriteUrl The url that should be used instead of fileurl
+     * @param IOInterface $io The IO instance
+     * @param Config $config The config
+     * @param array $options The options
+     * @param bool $disableTls
      */
     public function __construct(
         $rewriteUrl,
         IOInterface $io,
-        Config $config = null,
+        Config $config,
         array $options = [],
         $disableTls = false
     ) {

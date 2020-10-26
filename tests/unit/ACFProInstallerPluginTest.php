@@ -13,11 +13,13 @@ use Composer\Util\RemoteFilesystem;
 use PHPUnit\Framework\TestCase;
 use PivvenIT\Composer\Installers\ACFPro\ACFProInstallerPlugin;
 use PivvenIT\Composer\Installers\ACFPro\Download\DownloadMatcherInterface;
-use PivvenIT\Composer\Installers\ACFPro\Download\RewriteUrlRemoteFilesystem;
+use PivvenIT\Composer\Installers\ACFPro\Download\Interceptor\BackwardsCompatibleDownloadInterceptorFactory;
+use PivvenIT\Composer\Installers\ACFPro\Download\Interceptor\DownloadInterceptorInterface;
 use PivvenIT\Composer\Installers\ACFPro\Exceptions\MissingKeyException;
 use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Appenders\UrlLicenseKeyAppenderInterface;
 use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\LicenseKeyProviderFactoryInterface;
 use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\LicenseKeyProviderInterface;
+use PivvenIT\Composer\Installers\ACFPro\Test\Download\Interceptor\BackwardsCompatibleDownloadInterceptorFactoryTest;
 
 class ACFProInstallerPluginTest extends TestCase
 {
@@ -40,13 +42,36 @@ class ACFProInstallerPluginTest extends TestCase
         );
     }
 
-    public function testOnPreFileDownloadWithNonACFUrlDoesNotRewriteUrl()
+    public function testDeactivateDoesNothing()
+    {
+        $sut = new ACFProInstallerPlugin();
+        $composer = $this->createMock(Composer::class);
+        $io = $this->createMock(IOInterface::class);
+        $sut->activate($composer, $io);
+        $composer->expects($this->never())->method($this->anything());
+        $io->expects($this->never())->method($this->anything());
+        $sut->deactivate($composer, $io);
+    }
+
+    public function testUninstallDoesNothing()
+    {
+        $sut = new ACFProInstallerPlugin();
+        $composer = $this->createMock(Composer::class);
+        $io = $this->createMock(IOInterface::class);
+        $sut->activate($composer, $io);
+        $composer->expects($this->never())->method($this->anything());
+        $io->expects($this->never())->method($this->anything());
+        $sut->uninstall($composer, $io);
+    }
+
+    public function testOnPreFileDownloadWithNonACFUrlDoesNotCreateInterceptor()
     {
         $event = $this->createMock(PreFileDownloadEvent::class);
-        $event->expects($this->never())->method('setRemoteFilesystem');
-        $event->method('getProcessedUrl')->willReturn('https://example.com');
+        $event->expects($this->once())->method('getProcessedUrl')->willReturn('http://example.com');
 
-        $sut = new ACFProInstallerPlugin();
+        $downloadInterceptorFactory = $this->createMock(BackwardsCompatibleDownloadInterceptorFactory::class);
+        $sut = new ACFProInstallerPlugin(null, null, null, $downloadInterceptorFactory);
+        $downloadInterceptorFactory->expects($this->never())->method('build');
         $sut->onPreFileDownload($event);
     }
 
@@ -73,41 +98,39 @@ class ACFProInstallerPluginTest extends TestCase
         $sut->onPreFileDownload($event);
     }
 
-    public function testOnPreFileDownloadWithACFUrlDoesSetRemoteFileSystemWithCorrectURlWithLicenseKey()
+    public function testOnPreFileDownloadWithACFUrlDoesCreateInterceptorAndInterceptsRequest()
     {
-        $downloadMatcher = $this->createMock(DownloadMatcherInterface::class);
-        $downloadMatcher->method('matches')->willReturn(true);
+        $event = $this->createMock(PreFileDownloadEvent::class);
+        $url = 'https://example.com/download?v=5.8.7';
+        $key = '1234';
+        $newUrl = "{$url}&k={$key}";
+        $event->expects($this->once())->method('getProcessedUrl')->willReturn($url);
 
         $licenseKeyProvider = $this->createMock(LicenseKeyProviderInterface::class);
-        $key = "ecb0254b-61e1-4132-b511-b78ec5057ed6";
-        $url = 'https://example.com/download?v=5.8.7';
         $licenseKeyProvider->expects($this->once())->method('provide')->willReturn($key);
+
         $licenseKeyProviderFactory = $this->createMock(LicenseKeyProviderFactoryInterface::class);
-        $licenseKeyProviderFactory->expects($this->once())->method("build")->willReturn($licenseKeyProvider);
+        $licenseKeyProviderFactory->expects($this->once())->method('build')->willReturn($licenseKeyProvider);
 
         $licenseKeyAppender = $this->createMock(UrlLicenseKeyAppenderInterface::class);
-        $licenseKeyAppender->expects($this->once())->method('append')->withConsecutive([
-            $url,
-            $key
-        ])->willReturn("{$url}&k={$key}");
+        $licenseKeyAppender->expects($this->once())->method('append')->willReturn($newUrl);
 
-        $composer = $this->createMock(Composer::class);
-        $composer->method('getConfig')->willReturn(new Config());
-        $io = $this->createMock(IOInterface::class);
+        $downloadMatcher = $this->createMock(DownloadMatcherInterface::class);
+        $downloadMatcher->expects($this->once())->method('matches')->with($url)->willReturn(true);
 
-        $rfs = $this->createMock(RemoteFilesystem::class);
-        $rfs->expects($this->once())->method('getOptions')->willReturn([]);
-        $rfs->expects($this->once())->method('isTlsDisabled')->willReturn(true);
+        $downloadInterceptor = $this->createMock(DownloadInterceptorInterface::class);
+        $downloadInterceptor->expects($this->once())->method('intercept')->with($event, $newUrl);
 
-        $event = $this->createMock(PreFileDownloadEvent::class);
-        $event->expects($this->once())->method('setRemoteFilesystem');
-        $event->method('getProcessedUrl')->willReturn($url);
-        $event->method('getRemoteFileSystem')->willReturn($rfs);
-        $event->expects($this->once())->method('setRemoteFileSystem')
-            ->with($this->isInstanceOf(RewriteUrlRemoteFilesystem::class));
+        $downloadInterceptorFactory = $this->createMock(BackwardsCompatibleDownloadInterceptorFactory::class);
+        $downloadInterceptorFactory->expects($this->once())->method('build')->willReturn($downloadInterceptor);
 
-        $sut = new ACFProInstallerPlugin($licenseKeyProviderFactory, $licenseKeyAppender, $downloadMatcher);
-        $sut->activate($composer, $io);
+        $sut = new ACFProInstallerPlugin(
+            $licenseKeyProviderFactory,
+            $licenseKeyAppender,
+            $downloadMatcher,
+            $downloadInterceptorFactory
+        );
+        $sut->activate($this->createMock(Composer::class), $this->createMock(IOInterface::class));
         $sut->onPreFileDownload($event);
     }
 }
