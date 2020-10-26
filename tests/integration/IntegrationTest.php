@@ -67,6 +67,14 @@ class IntegrationTest extends TestCase
         );
         $process->mustRun();
 
+        // If the network exists, remove it first
+        $process = new Process(["docker", "network", "ls", "-f", "name=acf-pro-installer-test"]);
+        $process->mustRun();
+        if (strstr($process->getOutput(), 'acf-pro-installer-test') !== false) {
+            $process = new Process(["docker", "network", "rm", "acf-pro-installer-test"]);
+            $process->mustRun();
+        }
+
         $process = new Process(["docker", "network", "create", "--driver", "bridge", "acf-pro-installer-test"]);
         $process->mustRun();
 
