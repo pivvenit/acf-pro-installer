@@ -15,7 +15,7 @@ class IntegrationTest extends TestCase
 
     public static $composerVersions = [
         "1.10" => "1.10@sha256:5821c81e84f77906e6ae8c9a2d016d4d635669ca595b12e949fcea518d6ed415",
-        "2.0" => "2.0@sha256:aec14858305c64f735fd214b01bb0dc4327545d94bac6d7d4f28d3c486945b0a",
+        "2.0" => "2.0@sha256:a70eecbeeddbb9d06e0897e6d00bbf32388dba87aa4cc15e107e58367e878be1",
     ];
 
     public function getTestMatrix()
