@@ -11,13 +11,9 @@ It reads your :key: ACF PRO key from the **environment** or a **.env file**.
 [ACF PRO]: https://www.advancedcustomfields.com/pro/
 [composer]: https://github.com/composer/composer
 
-## COMPOSER 2.0 IMPORTANT NOTICE
-We're fully aware of Composer 2.0 being released, we're working on version 3.0 of this plugin, that will be compatible with Composer 2.0.
-However, there are some issues that are being addressed by the composer core developers and a group of plugin authors (us included).
-If you are interested in the progress, please follow our status updates in the [pull-request](https://github.com/pivvenit/acf-pro-installer/pull/137).
-We're sorry for any inconvenience, and will do our best to release a working solution as soon as possible, so you can enjoy all the goodness of Composer 2.0.
-
 ## Usage
+
+> This plugin is compatible with Both Composer 2.x (latest) and 1.x
 
 **1. Add our [Advanced Custom Fields Composer Bridge](https://github.com/pivvenit/acf-composer-bridge) repository to the [`repositories`][composer-repositories] field in `composer.json`**
 > This repository simply provides a periodically updated [packages.json](https://pivvenit.github.io/acf-composer-bridge/composer/v2/packages.json), that redirects composer to the ACF provided downloads. 
