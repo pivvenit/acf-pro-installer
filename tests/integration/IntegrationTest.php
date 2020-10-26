@@ -283,7 +283,8 @@ class IntegrationTest extends TestCase
     {
         $localComposerPath = __DIR__ . "/scenarios/composer.dev-master.json";
         $makeConfigDirCommand = 'mkdir ~/.composer';
-        $configCommand = 'echo "{ \\"config\\": { \\"acf-pro-key\\": \\"938C927AFC694954A84476CF3CBD28B3\\"}}" >> ~/.composer/config.json';
+        $configContents = '{\\"config\\":{\\"acf-pro-key\\":\\"938C927AFC694954A84476CF3CBD28B3\\"}}';
+        $configCommand = sprintf("echo \"%s\" >> ~/.composer/config.json", $configContents);
         $installCommand = "composer install --no-dev --no-scripts --no-progress --no-suggest";
         $process = new Process(
             [
