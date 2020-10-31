@@ -152,7 +152,9 @@ class IntegrationTest extends TestCase
     public function tearDown(): void
     {
         parent::tearDown();
-        $registry = new Process(["docker", "logs", "acf-pro-installer-registry", "--since", $this->testStartedAt->getTimestamp()]);
+        $registry = new Process(
+            ["docker", "logs", "acf-pro-installer-registry", "--since", $this->testStartedAt->getTimestamp()]
+        );
         $registry->mustRun(function ($type, $buffer) {
             echo $buffer;
         });
