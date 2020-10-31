@@ -27,6 +27,8 @@ class IntegrationTest extends TestCase
         }
     }
 
+    private $testStartedAt;
+
     public static function setUpBeforeClass(): void
     {
         // Only run these tests if docker is available
@@ -78,6 +80,22 @@ class IntegrationTest extends TestCase
         $process = new Process(["docker", "network", "create", "--driver", "bridge", "acf-pro-installer-test"]);
         $process->mustRun();
 
+        $process = new Process(
+            [
+                "docker",
+                "run",
+                "-d",
+                "-i",
+                "--network=acf-pro-installer-test",
+                "--network-alias=connect.advancedcustomfields.com",
+                "--name",
+                "acf-pro-installer-registry",
+                "--rm",
+                "acf-pro-installer/registry:latest"
+            ]
+        );
+        $process->mustRun();
+
         foreach (self::$phpVersions as $shortPhpVersion => $fullPhpVersion) {
             foreach (self::$composerVersions as $shortComposerVersion => $fullComposerVersion) {
                 // Build the app image
@@ -100,8 +118,17 @@ class IntegrationTest extends TestCase
         }
     }
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->testStartedAt = new \DateTime();
+    }
+
     public static function tearDownAfterClass(): void
     {
+        $process = new Process(["docker", "rm", "-f", "acf-pro-installer-registry"]);
+        $process->mustRun();
+
         $process = new Process(["docker", "network", "rm", "acf-pro-installer-test"]);
         $process->mustRun();
 
@@ -122,38 +149,16 @@ class IntegrationTest extends TestCase
         rmdir($releaseDir);
     }
 
-    public function setUp(): void
+    public function tearDown(): void
     {
-        parent::setUp();
-        // start registry image
+        parent::tearDown();
         $registry = new Process(
-            [
-                "docker",
-                "run",
-                "-d",
-                "-i",
-                "--network=acf-pro-installer-test",
-                "--network-alias=connect.advancedcustomfields.com",
-                "--name",
-                "acf-pro-installer-registry",
-                "--rm",
-                "acf-pro-installer/registry:latest"
-            ]
+            ["docker", "logs", "acf-pro-installer-registry", "--since", $this->testStartedAt->getTimestamp()]
         );
         $registry->mustRun(function ($type, $buffer) {
             echo $buffer;
         });
-    }
-
-    public function tearDown(): void
-    {
-        parent::tearDown();
-        $registry = new Process(["docker", "logs", "acf-pro-installer-registry"]);
-        $registry->mustRun(function ($type, $buffer) {
-            echo $buffer;
-        });
-        $process = new Process(["docker", "rm", "-f", "acf-pro-installer-registry"]);
-        $process->mustRun();
+        $this->testStartedAt = null;
     }
 
     /**
