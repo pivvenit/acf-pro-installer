@@ -10,7 +10,8 @@ use Symfony\Component\Process\Process;
 class IntegrationTest extends TestCase
 {
     public static $phpVersions = [
-        "7.4" => "7.4-alpine@sha256:253e5534cff41e167895a1f749cbc557ea673e48429589cc9df2e896fe99958e"
+        "7.4" => "7.4-alpine@sha256:253e5534cff41e167895a1f749cbc557ea673e48429589cc9df2e896fe99958e",
+        "8.0RC3" => "8.0.0RC3-cli-alpine@sha256:fe86f1ebea2e14514f9a6a4223a0470459f43ddf07470cbb9d5d5eafec9b8195"
     ];
 
     public static $composerVersions = [
@@ -68,6 +69,14 @@ class IntegrationTest extends TestCase
             __DIR__ . "/images/registry"
         );
         $process->mustRun();
+
+        // If any container exists, remove it first
+        $process = new Process(["docker", "ps", "-f", "name=acf-pro-installer-registry"]);
+        $process->mustRun();
+        if (strstr($process->getOutput(), 'acf-pro-installer-registry') !== false) {
+            $process = new Process(["docker", "rm", "-f", "acf-pro-installer-registry"]);
+            $process->mustRun();
+        }
 
         // If the network exists, remove it first
         $process = new Process(["docker", "network", "ls", "-f", "name=acf-pro-installer-test"]);
