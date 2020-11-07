@@ -36,7 +36,7 @@ class ComposerV2DownloadInterceptorTest extends TestCase
                 class_alias(get_class($mock), 'Composer\\Plugin\\PreFileDownloadEvent');
             }
         };
-        spl_autoload_register($autoloader, false, true);
+        spl_autoload_register($autoloader, true, true);
 
         $url = 'https://example.com/download?v=5.8.7';
         $newUrl = "{$url}&k=ecb0254b-61e1-4132-b511-b78ec5057ed6";
