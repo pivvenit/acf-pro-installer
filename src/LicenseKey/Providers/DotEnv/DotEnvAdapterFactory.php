@@ -7,10 +7,14 @@ class DotEnvAdapterFactory
 {
     /**
      * @param \Dotenv\Dotenv|null $dotEnv
-     * @return DotEnvAdapterInterface
+     * @return DotEnvAdapterInterface|null
      */
-    public static function build($dotEnv = null): DotEnvAdapterInterface
+    public static function build($dotEnv = null): ?DotEnvAdapterInterface
     {
+        if (is_null($dotEnv) && !class_exists('\\Dotenv\\Dotenv')) {
+            return null;
+        }
+
         if (self::isV5($dotEnv)) {
             // vlucas/phpdotenv ^5.0
             return new DotEnvV5Adapter();

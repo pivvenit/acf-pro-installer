@@ -8,11 +8,11 @@ use PivvenIT\Composer\Installers\ACFPro\LicenseKey\Providers\EnvironmentVariable
 class DotEnvLicenseKeyProvider extends EnvironmentVariableLicenseKeyProvider
 {
     /**
-     * @var DotEnvAdapterInterface
+     * @var DotEnvAdapterInterface | null
      */
     private $dotEnvAdapter;
 
-    public function __construct(DotEnvAdapterInterface $dotEnvAdapter)
+    public function __construct(?DotEnvAdapterInterface $dotEnvAdapter)
     {
         $this->dotEnvAdapter = $dotEnvAdapter;
     }
@@ -23,7 +23,7 @@ class DotEnvLicenseKeyProvider extends EnvironmentVariableLicenseKeyProvider
     public function provide(): ?string
     {
         $currentWorkingDirectory = getcwd();
-        if ($currentWorkingDirectory !== false) {
+        if ($currentWorkingDirectory !== false && $this->dotEnvAdapter !== null) {
             $this->dotEnvAdapter->load($currentWorkingDirectory);
         }
         return parent::provide();

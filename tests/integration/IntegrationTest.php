@@ -231,6 +231,7 @@ class IntegrationTest extends TestCase
     public function testWithDevMasterAndDotEnvV3InstallWorksCorrectly($phpVersion, $composerVersion)
     {
         $localComposerPath = __DIR__ . "/scenarios/composer.dotenv3.json";
+        $localDotEnvFilePath = __DIR__ . "/scenarios/dotenv5.env";
         $process = new Process(
             [
                 "docker",
@@ -238,10 +239,10 @@ class IntegrationTest extends TestCase
                 "--rm",
                 "-i",
                 "--network=acf-pro-installer-test",
-                "-e",
-                "ACF_PRO_KEY=938C927AFC694954A84476CF3CBD28B3",
                 "-v",
                 "{$localComposerPath}:/app/composer.json",
+                "-v",
+                "{$localDotEnvFilePath}:/app/.env",
                 "acf-pro-installer/testapp:{$phpVersion}-{$composerVersion}"
             ],
             __DIR__
@@ -259,6 +260,7 @@ class IntegrationTest extends TestCase
     public function testWithDevMasterAndDotEnvV4InstallWorksCorrectly($phpVersion, $composerVersion)
     {
         $localComposerPath = __DIR__ . "/scenarios/composer.dotenv4.json";
+        $localDotEnvFilePath = __DIR__ . "/scenarios/dotenv5.env";
         $process = new Process(
             [
                 "docker",
@@ -266,10 +268,10 @@ class IntegrationTest extends TestCase
                 "--rm",
                 "-i",
                 "--network=acf-pro-installer-test",
-                "-e",
-                "ACF_PRO_KEY=938C927AFC694954A84476CF3CBD28B3",
                 "-v",
                 "{$localComposerPath}:/app/composer.json",
+                "-v",
+                "{$localDotEnvFilePath}:/app/.env",
                 "acf-pro-installer/testapp:{$phpVersion}-{$composerVersion}"
             ],
             __DIR__
@@ -328,8 +330,35 @@ class IntegrationTest extends TestCase
                 "--rm",
                 "-i",
                 "--network=acf-pro-installer-test",
-                "-e",
-                "ACF_PRO_KEY=938C927AFC694954A84476CF3CBD28B3",
+                "-v",
+                "{$localComposerPath}:/app/composer.json",
+                "-v",
+                "{$localDotEnvFilePath}:/app/.env",
+                "acf-pro-installer/testapp:{$phpVersion}-{$composerVersion}"
+            ],
+            __DIR__
+        );
+        $process->setTimeout(60);
+        $process->mustRun(function ($type, $buffer) {
+            echo $buffer;
+        });
+        $this->assertEquals(0, $process->getExitCode());
+    }
+
+    /**
+     * @dataProvider getTestMatrix
+     */
+    public function testWithDotEnvDevMasterEnvFileWorksCorrectly($phpVersion, $composerVersion)
+    {
+        $localComposerPath = __DIR__ . "/scenarios/composer.dotenvdev-master.json";
+        $localDotEnvFilePath = __DIR__ . "/scenarios/dotenv5.env";
+        $process = new Process(
+            [
+                "docker",
+                "run",
+                "--rm",
+                "-i",
+                "--network=acf-pro-installer-test",
                 "-v",
                 "{$localComposerPath}:/app/composer.json",
                 "-v",

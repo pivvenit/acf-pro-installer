@@ -3,7 +3,7 @@ ARG PHP_VERSION=7.4-alpine@sha256:862f99ef809039aae5450d93a58faead3b23a83b75e0f0
 FROM composer:${COMPOSER_VERSION} as composer
 
 FROM php:${PHP_VERSION} as php
-RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
+RUN apk update && apk add ca-certificates git && rm -rf /var/cache/apk/*
 COPY test.crt /usr/local/share/ca-certificates/test.crt
 RUN update-ca-certificates
 COPY --from=composer /usr/bin/composer /usr/bin/composer
