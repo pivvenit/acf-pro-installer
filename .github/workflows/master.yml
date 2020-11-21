@@ -67,6 +67,6 @@ jobs:
           fail_ci_if_error: true
 
       - name: Run Integration tests
-        run: composer run integration-test
+        run: composer run --timeout 600 integration-test
 
 

@@ -58,4 +58,4 @@ jobs:
         run: composer run coverage-check
 
       - name: Run Integration tests
-        run: composer run integration-test
+        run: composer run --timeout 600 integration-test
