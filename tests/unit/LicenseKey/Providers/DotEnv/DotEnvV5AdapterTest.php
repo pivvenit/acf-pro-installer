@@ -44,7 +44,7 @@ class DotEnvV5AdapterTest extends TestCase
                 class_alias(get_class($mock), 'Dotenv\\Dotenv');
             }
         };
-        spl_autoload_register($this->autoloader, false, true);
+        spl_autoload_register($this->autoloader, true, true);
         $sut = new DotEnvV5Adapter();
         $this->assertFalse(getenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME));
         $sut->load(getcwd());
@@ -70,7 +70,7 @@ class DotEnvV5AdapterTest extends TestCase
                 class_alias(get_class($mock), 'Dotenv\\Dotenv');
             }
         };
-        spl_autoload_register($this->autoloader, false, true);
+        spl_autoload_register($this->autoloader, true, true);
         $sut = new DotEnvV5Adapter();
         $this->assertFalse(getenv(EnvironmentVariableLicenseKeyProvider::ENV_VARIABLE_NAME));
         $sut->load(getcwd());
