@@ -199,7 +199,7 @@ class IntegrationTest extends TestCase
             ],
             __DIR__
         );
-        $process->setTimeout(60);
+        $process->setTimeout(90);
         $process->mustRun(function ($type, $buffer) {
             echo $buffer;
         });
@@ -227,7 +227,7 @@ class IntegrationTest extends TestCase
             ],
             __DIR__
         );
-        $process->setTimeout(60);
+        $process->setTimeout(90);
         $process->mustRun(function ($type, $buffer) {
             echo $buffer;
         });
@@ -257,7 +257,7 @@ class IntegrationTest extends TestCase
             ],
             __DIR__
         );
-        $process->setTimeout(60);
+        $process->setTimeout(90);
         $process->mustRun(function ($type, $buffer) {
             echo $buffer;
         });
@@ -286,7 +286,7 @@ class IntegrationTest extends TestCase
             ],
             __DIR__
         );
-        $process->setTimeout(60);
+        $process->setTimeout(90);
         $process->mustRun(function ($type, $buffer) {
             echo $buffer;
         });
@@ -319,7 +319,7 @@ class IntegrationTest extends TestCase
             ],
             __DIR__
         );
-        $process->setTimeout(60);
+        $process->setTimeout(90);
         $process->mustRun(function ($type, $buffer) {
             echo $buffer;
         });
@@ -348,7 +348,7 @@ class IntegrationTest extends TestCase
             ],
             __DIR__
         );
-        $process->setTimeout(60);
+        $process->setTimeout(90);
         $process->mustRun(function ($type, $buffer) {
             echo $buffer;
         });
@@ -396,7 +396,8 @@ class IntegrationTest extends TestCase
             ],
             __DIR__
         );
-        $process->setTimeout(60);
+        // Installing bedrock might take some time
+        $process->setTimeout(300);
         $process->mustRun(function ($type, $buffer) {
             echo $buffer;
         });
