@@ -19,6 +19,7 @@ class EnvironmentVariableLicenseKeyProvider implements LicenseKeyProviderInterfa
      */
     public function provide(): ?string
     {
+        /** @var string|null $key */
         $key = getenv(self::ENV_VARIABLE_NAME);
         if (empty($key)) {
             return null;
