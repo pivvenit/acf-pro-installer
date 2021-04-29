@@ -1,0 +1,20 @@
+version: 2
+registries:
+  composer-repository-packages-pivvenit-net:
+    type: composer-repository
+    url: https://packages.pivvenit.net
+    username: bitbucket
+    password: "${{secrets.COMPOSER_REPOSITORY_PACKAGES_PIVVENIT_NET_PASSWORD}}"
+
+updates:
+- package-ecosystem: composer
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "19:00"
+    timezone: Europe/Amsterdam
+  open-pull-requests-limit: 10
+  assignees:
+  - Qrious
+  registries:
+  - composer-repository-packages-pivvenit-net
